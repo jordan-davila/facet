@@ -1,0 +1,142 @@
+import { Gem } from 'lucide-react'
+import { useRef } from 'react'
+import { Tooltip, TooltipContent, TooltipTrigger } from '@/components/ui/tooltip'
+import type { AuditReport } from '@/core/types'
+import { cn } from '@/lib/utils'
+import { type NavId, type NavItem, PRIMARY_NAV, SETTINGS_NAV, isFacetId } from '../lib/nav'
+import { findingsSummary } from '../lib/score'
+
+interface SidebarProps {
+  active: NavId
+  onSelect: (id: NavId) => void
+  report: AuditReport | null
+}
+
+interface Marker {
+  className: string
+  /** Spoken suffix, so the dot is never the only carrier of the state. */
+  description: string
+}
+
+/** Red pip when a facet has errors, amber when only warnings, otherwise none. */
+function facetMarker(report: AuditReport | null, id: NavId): Marker | null {
+  if (!report || !isFacetId(id)) return null
+  const result = report.results.find((r) => r.facet === id)
+  if (!result) return null
+  if (result.errors === 0 && result.warnings === 0) return null
+  return {
+    className: result.errors > 0 ? 'bg-destructive' : 'bg-warning',
+    description: findingsSummary(result.errors, result.warnings),
+  }
+}
+
+interface NavButtonProps {
+  item: NavItem
+  active: boolean
+  marker: Marker | null
+  tabIndex: number
+  onSelect: (id: NavId) => void
+  onKeyDown: (event: React.KeyboardEvent) => void
+  register: (el: HTMLButtonElement | null) => void
+}
+
+function NavButton({
+  item,
+  active,
+  marker,
+  tabIndex,
+  onSelect,
+  onKeyDown,
+  register,
+}: NavButtonProps) {
+  const { Icon } = item
+  const label = marker ? `${item.label} — ${marker.description}` : item.label
+
+  return (
+    <Tooltip>
+      <TooltipTrigger asChild>
+        <button
+          ref={register}
+          type="button"
+          aria-label={label}
+          aria-current={active ? 'page' : undefined}
+          tabIndex={tabIndex}
+          onClick={() => onSelect(item.id)}
+          onKeyDown={onKeyDown}
+          className={cn(
+            'relative flex size-10 items-center justify-center rounded-md transition-colors',
+            active
+              ? 'bg-primary/15 text-primary'
+              : 'text-muted-foreground hover:bg-accent hover:text-foreground'
+          )}
+        >
+          <Icon className="size-[18px]" aria-hidden />
+          {marker && (
+            <span
+              className={cn(
+                'absolute top-1.5 right-1.5 size-1.5 rounded-full ring-2 ring-background',
+                marker.className
+              )}
+              aria-hidden
+            />
+          )}
+        </button>
+      </TooltipTrigger>
+      <TooltipContent side="right">{label}</TooltipContent>
+    </Tooltip>
+  )
+}
+
+const NAV_ITEMS: NavItem[] = [...PRIMARY_NAV, SETTINGS_NAV]
+
+export function Sidebar({ active, onSelect, report }: SidebarProps) {
+  const buttons = useRef<(HTMLButtonElement | null)[]>([])
+
+  /** Arrow keys move between rail items; only the active one is in the tab order. */
+  function handleKeyDown(event: React.KeyboardEvent, index: number) {
+    const last = NAV_ITEMS.length - 1
+    const next = {
+      ArrowDown: index === last ? 0 : index + 1,
+      ArrowRight: index === last ? 0 : index + 1,
+      ArrowUp: index === 0 ? last : index - 1,
+      ArrowLeft: index === 0 ? last : index - 1,
+      Home: 0,
+      End: last,
+    }[event.key]
+    if (next === undefined) return
+    event.preventDefault()
+    buttons.current[next]?.focus()
+  }
+
+  const activeIndex = Math.max(
+    0,
+    NAV_ITEMS.findIndex((item) => item.id === active)
+  )
+
+  return (
+    <nav
+      aria-label="Facets"
+      className="flex w-14 shrink-0 flex-col items-center gap-1 border-r bg-card py-3"
+    >
+      <span className="mb-2 flex size-9 items-center justify-center rounded-md bg-primary text-primary-foreground">
+        <Gem className="size-5" aria-hidden />
+        <span className="sr-only">Facet</span>
+      </span>
+      {NAV_ITEMS.map((item, index) => (
+        <div key={item.id} className={cn(item.atEnd && 'mt-auto')}>
+          <NavButton
+            item={item}
+            active={active === item.id}
+            marker={facetMarker(report, item.id)}
+            tabIndex={index === activeIndex ? 0 : -1}
+            onSelect={onSelect}
+            onKeyDown={(event) => handleKeyDown(event, index)}
+            register={(el) => {
+              buttons.current[index] = el
+            }}
+          />
+        </div>
+      ))}
+    </nav>
+  )
+}

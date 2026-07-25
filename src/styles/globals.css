@@ -1,0 +1,255 @@
+@import 'tailwindcss';
+
+/*
+ * Facet — "Loupe"
+ *
+ * The panel is a jeweler's instrument: a cool, faintly blue ground, a sapphire
+ * brand that deliberately stays out of the red/amber/green severity spectrum,
+ * and two typefaces with one job each.
+ *
+ *   Archivo (sans)        — Facet's own voice: labels, headings, prose.
+ *   IBM Plex Mono (mono)  — the inspected page's voice: tags, roles, selectors,
+ *                           URLs, JSON, and every measured number.
+ *
+ * That split is structure, not decoration: it makes a string's origin readable
+ * at a glance. Keep it honest.
+ *
+ * Themes use light-dark(), so every token is declared exactly once and the two
+ * schemes can never drift apart. Requires Chrome 123+ (see manifest.config.ts).
+ */
+
+/*
+ * Tailwind's `dark:` variant must fire on exactly the same signal the tokens
+ * do. Left at its default it only watches the OS preference, so a user who
+ * picks Light while their OS is dark gets dark-only rules (shadcn leans on
+ * them: dark:bg-destructive/60 and friends) painted over light tokens.
+ */
+@custom-variant dark {
+  &:where([data-theme='dark'], [data-theme='dark'] *) {
+    @slot;
+  }
+  @media (prefers-color-scheme: dark) {
+    &:where(:not([data-theme='light']):not([data-theme='light'] *)) {
+      @slot;
+    }
+  }
+}
+
+@font-face {
+  font-family: 'Archivo';
+  font-style: normal;
+  font-weight: 100 900;
+  font-stretch: 62% 125%;
+  font-display: swap;
+  src: url('../assets/fonts/archivo-latin.woff2') format('woff2');
+  unicode-range:
+    U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304, U+0308, U+0329,
+    U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
+}
+@font-face {
+  font-family: 'Archivo';
+  font-style: normal;
+  font-weight: 100 900;
+  font-stretch: 62% 125%;
+  font-display: swap;
+  src: url('../assets/fonts/archivo-latin-ext.woff2') format('woff2');
+  unicode-range:
+    U+0100-02BA, U+02BD-02C5, U+02C7-02CC, U+02CE-02D7, U+02DD-02FF, U+0304, U+0308, U+0329,
+    U+1D00-1DBF, U+1E00-1E9F, U+1EF2-1EFF, U+2020, U+20A0-20AB, U+20AD-20C0, U+2113, U+2C60-2C7F,
+    U+A720-A7FF;
+}
+@font-face {
+  font-family: 'IBM Plex Mono';
+  font-style: normal;
+  font-weight: 400;
+  font-display: swap;
+  src: url('../assets/fonts/plex-mono-400-latin.woff2') format('woff2');
+  unicode-range:
+    U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304, U+0308, U+0329,
+    U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
+}
+@font-face {
+  font-family: 'IBM Plex Mono';
+  font-style: normal;
+  font-weight: 400;
+  font-display: swap;
+  src: url('../assets/fonts/plex-mono-400-latin-ext.woff2') format('woff2');
+  unicode-range:
+    U+0100-02BA, U+02BD-02C5, U+02C7-02CC, U+02CE-02D7, U+02DD-02FF, U+0304, U+0308, U+0329,
+    U+1D00-1DBF, U+1E00-1E9F, U+1EF2-1EFF, U+2020, U+20A0-20AB, U+20AD-20C0, U+2113, U+2C60-2C7F,
+    U+A720-A7FF;
+}
+@font-face {
+  font-family: 'IBM Plex Mono';
+  font-style: normal;
+  font-weight: 500;
+  font-display: swap;
+  src: url('../assets/fonts/plex-mono-500-latin.woff2') format('woff2');
+  unicode-range:
+    U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304, U+0308, U+0329,
+    U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
+}
+@font-face {
+  font-family: 'IBM Plex Mono';
+  font-style: normal;
+  font-weight: 600;
+  font-display: swap;
+  src: url('../assets/fonts/plex-mono-600-latin.woff2') format('woff2');
+  unicode-range:
+    U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304, U+0308, U+0329,
+    U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
+}
+
+:root {
+  color-scheme: light dark;
+
+  /* Cool paper, never warm — the panel sits beside the page under inspection
+     and must not tint the reviewer's read of that page's own color. */
+  --background: light-dark(oklch(0.982 0.003 255), oklch(0.175 0.014 258));
+  --foreground: light-dark(oklch(0.19 0.016 258), oklch(0.97 0.004 250));
+  --card: light-dark(oklch(1 0 0), oklch(0.218 0.014 258));
+  --card-foreground: var(--foreground);
+  --popover: light-dark(oklch(1 0 0), oklch(0.245 0.014 258));
+  --popover-foreground: var(--foreground);
+
+  /* Sapphire: cooler and quieter than the stock indigo, so the brand never
+     competes with a severity color for attention. */
+  --primary: light-dark(oklch(0.48 0.135 248), oklch(0.72 0.115 245));
+  --primary-foreground: light-dark(oklch(0.99 0 0), oklch(0.16 0.014 258));
+
+  --secondary: light-dark(oklch(0.955 0.005 255), oklch(0.275 0.014 258));
+  --secondary-foreground: var(--foreground);
+  --muted: light-dark(oklch(0.955 0.005 255), oklch(0.275 0.014 258));
+  --muted-foreground: light-dark(oklch(0.47 0.014 258), oklch(0.71 0.012 255));
+  --accent: light-dark(oklch(0.945 0.008 250), oklch(0.31 0.016 255));
+  --accent-foreground: var(--foreground);
+
+  /* Severity. Each is chosen to clear 4.5:1 against --background as text and
+     to carry --*-foreground at 4.5:1 as a fill. */
+  --destructive: light-dark(oklch(0.545 0.2 25), oklch(0.7 0.175 22));
+  --destructive-foreground: light-dark(oklch(0.99 0 0), oklch(0.16 0.014 258));
+  --success: light-dark(oklch(0.53 0.14 156), oklch(0.75 0.14 160));
+  --success-foreground: light-dark(oklch(0.99 0 0), oklch(0.16 0.014 258));
+  --warning: light-dark(oklch(0.55 0.15 66), oklch(0.79 0.14 72));
+  --warning-foreground: light-dark(oklch(0.99 0 0), oklch(0.16 0.014 258));
+  --info: light-dark(oklch(0.52 0.11 240), oklch(0.74 0.1 240));
+  --info-foreground: light-dark(oklch(0.99 0 0), oklch(0.16 0.014 258));
+
+  /* Beryl — the dispersion accent. Reserved for the gauge and the spectrum. */
+  --spectral: light-dark(oklch(0.51 0.1 205), oklch(0.78 0.1 197));
+
+  --border: light-dark(oklch(0.9 0.008 255), oklch(1 0 0 / 11%));
+  --input: light-dark(oklch(0.88 0.008 255), oklch(1 0 0 / 16%));
+  --ring: var(--primary);
+
+  /* A cut edge, not a pill. */
+  --radius: 0.375rem;
+}
+
+:root[data-theme='light'] {
+  color-scheme: light;
+}
+:root[data-theme='dark'] {
+  color-scheme: dark;
+}
+
+@theme inline {
+  --font-sans:
+    'Archivo', ui-sans-serif, -apple-system, BlinkMacSystemFont, 'Segoe UI', system-ui, sans-serif;
+  --font-mono: 'IBM Plex Mono', ui-monospace, SFMono-Regular, Menlo, monospace;
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+  --color-card: var(--card);
+  --color-card-foreground: var(--card-foreground);
+  --color-popover: var(--popover);
+  --color-popover-foreground: var(--popover-foreground);
+  --color-primary: var(--primary);
+  --color-primary-foreground: var(--primary-foreground);
+  --color-secondary: var(--secondary);
+  --color-secondary-foreground: var(--secondary-foreground);
+  --color-muted: var(--muted);
+  --color-muted-foreground: var(--muted-foreground);
+  --color-accent: var(--accent);
+  --color-accent-foreground: var(--accent-foreground);
+  --color-destructive: var(--destructive);
+  --color-destructive-foreground: var(--destructive-foreground);
+  --color-success: var(--success);
+  --color-success-foreground: var(--success-foreground);
+  --color-warning: var(--warning);
+  --color-warning-foreground: var(--warning-foreground);
+  --color-info: var(--info);
+  --color-info-foreground: var(--info-foreground);
+  --color-spectral: var(--spectral);
+  --color-border: var(--border);
+  --color-input: var(--input);
+  --color-ring: var(--ring);
+  --radius-sm: calc(var(--radius) - 2px);
+  --radius-md: var(--radius);
+  --radius-lg: calc(var(--radius) + 2px);
+  --radius-xl: calc(var(--radius) + 6px);
+}
+
+@layer base {
+  * {
+    border-color: var(--color-border);
+  }
+  html,
+  body,
+  #root {
+    height: 100%;
+  }
+  body {
+    margin: 0;
+    background-color: var(--color-background);
+    color: var(--color-foreground);
+    font-family: var(--font-sans);
+    font-size: 13px;
+    -webkit-font-smoothing: antialiased;
+    text-rendering: optimizeLegibility;
+  }
+  /* Zero-specificity floor: nothing focusable is left without a visible ring,
+     while any component defining its own ring still wins. */
+  :where(a, button, [role='button'], [tabindex], input, select, textarea, summary):focus-visible {
+    outline: 2px solid var(--color-ring);
+    outline-offset: 2px;
+    border-radius: var(--radius-sm);
+  }
+  code,
+  kbd,
+  pre,
+  samp {
+    font-family: var(--font-mono);
+    /* Slashed zero — these blocks quote real markup, so 0 and O must differ. */
+    font-feature-settings: 'zero' 1;
+  }
+}
+
+@utility eyebrow {
+  /* Engraved captions. Mono, because they name a measurement. */
+  font-family: var(--font-mono);
+  font-size: 10px;
+  font-weight: 600;
+  line-height: 1;
+  letter-spacing: 0.11em;
+  text-transform: uppercase;
+  color: var(--color-muted-foreground);
+}
+
+@utility faceplate {
+  /* Archivo widened and tightened. Only where a number is the point:
+     the gauge, the tally, a per-facet score. */
+  font-stretch: 116%;
+  font-variant-numeric: tabular-nums;
+  letter-spacing: -0.02em;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+}
