@@ -1,0 +1,68 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Facet — design preview</title>
+    <style>
+      /* A frame at true side-panel dimensions, so the preview can't flatter
+         the design with width the real panel never has. */
+      body {
+        margin: 0;
+        min-height: 100vh;
+        display: grid;
+        place-items: center;
+        background: #6b7280;
+        font-family: system-ui, sans-serif;
+      }
+      #root {
+        width: 400px;
+        height: 820px;
+        overflow: hidden;
+        background: var(--background);
+        box-shadow: 0 12px 48px rgb(0 0 0 / 0.35);
+      }
+      .widths {
+        position: fixed;
+        top: 12px;
+        left: 12px;
+        display: flex;
+        gap: 6px;
+      }
+      .widths button {
+        font:
+          600 11px/1 ui-monospace,
+          monospace;
+        padding: 6px 9px;
+        border: 0;
+        border-radius: 4px;
+        cursor: pointer;
+        background: #1f2937;
+        color: #fff;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="widths">
+      <button data-w="320">320</button>
+      <button data-w="400">400</button>
+      <button data-w="500">500</button>
+      <button data-w="750">750</button>
+      <button data-s="ready">ready</button>
+      <button data-s="clean">clean</button>
+      <button data-s="loading">loading</button>
+      <button data-s="error">error</button>
+      <button data-s="unsupported">unsupported</button>
+    </div>
+    <div id="root"></div>
+    <script>
+      document.querySelector('.widths').addEventListener('click', (e) => {
+        const w = e.target.dataset.w
+        if (w) document.getElementById('root').style.width = w + 'px'
+        const s = e.target.dataset.s
+        if (s) location.search = '?state=' + s
+      })
+    </script>
+    <script type="module" src="./preview.tsx"></script>
+  </body>
+</html>

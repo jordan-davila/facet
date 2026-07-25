@@ -1,0 +1,150 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <title>Facet — store screenshots</title>
+    <style>
+      /*
+       * Store screenshot stage. Exactly 1280x800, with the real panel at its
+       * real width beside a caption — the panel is never stretched to fill the
+       * frame, because that would show users a layout they will never get.
+       */
+      * {
+        box-sizing: border-box;
+      }
+      /* Never set `color` on body here: #root is a descendant, and the panel
+         relies on inheriting its own --foreground. A stage color would leak
+         into every piece of panel text that doesn't set its own. */
+      body {
+        margin: 0;
+        width: 1280px;
+        height: 800px;
+        overflow: hidden;
+        background: #10141b;
+      }
+      #copy {
+        font-family: 'Archivo', system-ui, sans-serif;
+        color: #f4f6f8;
+      }
+      #stage {
+        width: 1280px;
+        height: 800px;
+        display: grid;
+        grid-template-columns: 1fr 400px;
+        align-items: center;
+        gap: 72px;
+        padding: 0 80px 0 96px;
+        background:
+          radial-gradient(1100px 700px at 12% 12%, #1d3358 0%, transparent 60%),
+          radial-gradient(900px 700px at 92% 88%, #123a44 0%, transparent 62%), #10141b;
+      }
+      #copy {
+        max-width: 560px;
+      }
+      .eyebrow {
+        font-family: 'IBM Plex Mono', ui-monospace, monospace;
+        font-size: 13px;
+        font-weight: 600;
+        letter-spacing: 0.16em;
+        text-transform: uppercase;
+        color: #7fd3e0;
+        margin: 0 0 20px;
+      }
+      h1 {
+        font-size: 54px;
+        line-height: 1.06;
+        font-weight: 700;
+        font-stretch: 112%;
+        letter-spacing: -0.025em;
+        margin: 0 0 20px;
+      }
+      p {
+        font-size: 21px;
+        line-height: 1.5;
+        color: #aab4c2;
+        margin: 0;
+      }
+      #frame {
+        position: relative;
+        width: 400px;
+        height: 736px;
+        overflow: hidden;
+        border-radius: 12px;
+        background: #10141b;
+        box-shadow:
+          0 0 0 1px rgb(255 255 255 / 0.09),
+          0 40px 90px rgb(0 0 0 / 0.55);
+      }
+      /* The panel is taller than any frame that fits 800px. Fade the last
+         rows out so the crop reads as "there is more", not as a mistake. */
+      #frame::after {
+        content: '';
+        position: absolute;
+        inset: auto 0 0 0;
+        height: 88px;
+        pointer-events: none;
+        background: linear-gradient(to bottom, transparent, #10141b 88%);
+      }
+      body.light-frame #frame,
+      body.light-frame #frame::after {
+        background: #fafbfc;
+      }
+      body.light-frame #frame::after {
+        background: linear-gradient(to bottom, transparent, #fafbfc 88%);
+      }
+      /* Promo tile: same system, one line, no panel. */
+      body.promo,
+      body.promo #stage {
+        width: 440px;
+        height: 280px;
+      }
+      body.promo #stage {
+        grid-template-columns: 1fr auto;
+        align-content: center;
+        padding: 0 30px;
+        gap: 18px;
+      }
+      body.promo #frame {
+        display: none;
+      }
+      #mark {
+        display: none;
+      }
+      body.promo #mark {
+        display: block;
+      }
+      body.promo .eyebrow {
+        font-size: 9px;
+        margin-bottom: 10px;
+      }
+      body.promo h1 {
+        font-size: 34px;
+        margin-bottom: 10px;
+      }
+      body.promo p {
+        font-size: 14px;
+      }
+    </style>
+  </head>
+  <body>
+    <div id="stage">
+      <div id="copy">
+        <p class="eyebrow" id="eyebrow">Accessibility &amp; SEO</p>
+        <h1 id="headline">Every facet of a page, in one panel</h1>
+        <p id="subhead">Loading…</p>
+      </div>
+      <svg id="mark" width="104" height="104" viewBox="0 0 104 104" aria-hidden="true">
+        <!-- The product's signature: an octagon, one edge per check. -->
+        <polygon
+          points="52,7 83.8,20.2 97,52 83.8,83.8 52,97 20.2,83.8 7,52 20.2,20.2"
+          fill="none"
+          stroke="#7fd3e0"
+          stroke-width="5"
+          stroke-linejoin="round"
+        />
+      </svg>
+      <div id="frame"><div id="root"></div></div>
+    </div>
+    <script type="module" src="./shots.tsx"></script>
+  </body>
+</html>
