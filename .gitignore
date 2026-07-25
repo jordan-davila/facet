@@ -1,0 +1,20 @@
+# Dependencies / build output
+node_modules/
+dist/
+coverage/
+*.tsbuildinfo
+
+# Secrets — never commit these
+.env
+.env.*
+*.pem
+*.key
+
+# OS / editor
+.DS_Store
+*.log
+.vscode/
+.idea/
+
+# Release artefacts
+releases/

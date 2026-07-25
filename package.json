@@ -1,0 +1,70 @@
+{
+  "name": "facet",
+  "private": true,
+  "version": "1.0.0",
+  "type": "module",
+  "description": "Inspect every facet of a page — headings, WAI-ARIA landmarks, colour contrast, meta/SEO, canonical, alt text, links and JSON-LD structured data — from one Manifest V3 side panel.",
+  "license": "MIT",
+  "scripts": {
+    "dev": "vite",
+    "dev:preview": "vite --config dev/vite.config.ts",
+    "build": "vite build",
+    "package": "node scripts/package.mjs",
+    "store:shots": "node scripts/store-screenshots.mjs",
+    "release": "pnpm typecheck && pnpm test && pnpm build && pnpm package",
+    "typecheck": "tsc --noEmit",
+    "test": "vitest run",
+    "test:watch": "vitest",
+    "coverage": "vitest run --coverage",
+    "icons": "node scripts/generate-icons.mjs",
+    "format": "prettier --write .",
+    "format:check": "prettier --check .",
+    "prepare": "husky"
+  },
+  "dependencies": {
+    "class-variance-authority": "^0.7.1",
+    "clsx": "^2.1.1",
+    "lucide-react": "^1.25.0",
+    "radix-ui": "^1.6.5",
+    "react": "^19.2.8",
+    "react-dom": "^19.2.8",
+    "sonner": "^2.0.7",
+    "tailwind-merge": "^3.6.0"
+  },
+  "devDependencies": {
+    "@commitlint/cli": "^21.2.1",
+    "@commitlint/config-conventional": "^21.2.0",
+    "@crxjs/vite-plugin": "2.7.1",
+    "@tailwindcss/vite": "^4.3.3",
+    "@trivago/prettier-plugin-sort-imports": "^6.0.2",
+    "@types/chrome": "^0.2.2",
+    "@types/node": "^26.1.1",
+    "@types/react": "^19.2.17",
+    "@types/react-dom": "^19.2.3",
+    "@vitejs/plugin-react": "^6.0.4",
+    "@vitest/coverage-v8": "^3.2.4",
+    "husky": "^9.1.7",
+    "jsdom": "^26.1.0",
+    "lint-staged": "^17.1.1",
+    "prettier": "^3.9.6",
+    "prettier-plugin-tailwindcss": "^0.8.1",
+    "puppeteer-core": "^25.3.0",
+    "tailwindcss": "^4.3.3",
+    "typescript": "^7.0.2",
+    "vite": "^8.1.5",
+    "vitest": "^3.2.4"
+  },
+  "pnpm": {
+    "onlyBuiltDependencies": [
+      "esbuild"
+    ]
+  },
+  "homepage": "https://github.com/jordan-davila/facet",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/jordan-davila/facet.git"
+  },
+  "bugs": {
+    "url": "https://github.com/jordan-davila/facet/issues"
+  }
+}
