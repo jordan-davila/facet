@@ -1,6 +1,7 @@
-import { Gem } from 'lucide-react'
+import { Coffee, Gem } from 'lucide-react'
 import { useRef } from 'react'
 import { Tooltip, TooltipContent, TooltipTrigger } from '@/components/ui/tooltip'
+import { SUPPORT_URL, hasSupportLink } from '@/core/links'
 import type { AuditReport } from '@/core/types'
 import { cn } from '@/lib/utils'
 import { type NavId, type NavItem, PRIMARY_NAV, SETTINGS_NAV, isFacetId } from '../lib/nav'
@@ -89,6 +90,33 @@ function NavButton({
 
 const NAV_ITEMS: NavItem[] = [...PRIMARY_NAV, SETTINGS_NAV]
 
+/** Settings is always the last rail item, so its roving index is fixed. */
+const SETTINGS_INDEX = NAV_ITEMS.length - 1
+
+/**
+ * The tip jar, in Buy Me a Coffee's own yellow. A link, not a nav button: it
+ * leaves the panel rather than switching views, so it sits outside the rail's
+ * arrow-key roving order and takes its own place in the tab sequence.
+ */
+function SupportLink() {
+  return (
+    <Tooltip>
+      <TooltipTrigger asChild>
+        <a
+          href={SUPPORT_URL}
+          target="_blank"
+          rel="noopener noreferrer"
+          aria-label="Buy me a coffee (opens in a new tab)"
+          className="flex size-10 items-center justify-center rounded-md bg-support text-support-foreground ring-1 ring-support-border transition-opacity ring-inset hover:opacity-85"
+        >
+          <Coffee className="size-[18px]" aria-hidden />
+        </a>
+      </TooltipTrigger>
+      <TooltipContent side="right">Buy me a coffee</TooltipContent>
+    </Tooltip>
+  )
+}
+
 export function Sidebar({ active, onSelect, report }: SidebarProps) {
   const buttons = useRef<(HTMLButtonElement | null)[]>([])
 
@@ -122,21 +150,36 @@ export function Sidebar({ active, onSelect, report }: SidebarProps) {
         <Gem className="size-5" aria-hidden />
         <span className="sr-only">Facet</span>
       </span>
-      {NAV_ITEMS.map((item, index) => (
-        <div key={item.id} className={cn(item.atEnd && 'mt-auto')}>
-          <NavButton
-            item={item}
-            active={active === item.id}
-            marker={facetMarker(report, item.id)}
-            tabIndex={index === activeIndex ? 0 : -1}
-            onSelect={onSelect}
-            onKeyDown={(event) => handleKeyDown(event, index)}
-            register={(el) => {
-              buttons.current[index] = el
-            }}
-          />
-        </div>
+      {PRIMARY_NAV.map((item, index) => (
+        <NavButton
+          key={item.id}
+          item={item}
+          active={active === item.id}
+          marker={facetMarker(report, item.id)}
+          tabIndex={index === activeIndex ? 0 : -1}
+          onSelect={onSelect}
+          onKeyDown={(event) => handleKeyDown(event, index)}
+          register={(el) => {
+            buttons.current[index] = el
+          }}
+        />
       ))}
+
+      {/* Pinned to the foot of the rail: leaving Facet, not moving within it. */}
+      <div className="mt-auto flex flex-col items-center gap-1">
+        {hasSupportLink() && <SupportLink />}
+        <NavButton
+          item={SETTINGS_NAV}
+          active={active === SETTINGS_NAV.id}
+          marker={null}
+          tabIndex={activeIndex === SETTINGS_INDEX ? 0 : -1}
+          onSelect={onSelect}
+          onKeyDown={(event) => handleKeyDown(event, SETTINGS_INDEX)}
+          register={(el) => {
+            buttons.current[SETTINGS_INDEX] = el
+          }}
+        />
+      </div>
     </nav>
   )
 }

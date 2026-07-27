@@ -135,6 +135,16 @@
   --info: light-dark(oklch(0.52 0.11 240), oklch(0.74 0.1 240));
   --info-foreground: light-dark(oklch(0.99 0 0), oklch(0.16 0.014 258));
 
+  /* Buy Me a Coffee's own brand yellow. A brand mark, so it is deliberately
+     the same in both themes, and deliberately far lighter and yellower than
+     --warning so a support button never reads as a caution. */
+  --support: #ffdd00;
+  --support-foreground: oklch(0.22 0.03 90);
+  /* The yellow is only 1.35:1 against the light-theme rail, so an icon-only
+     tile would have no perceivable edge. This darker gold gives the component
+     a boundary that clears WCAG 1.4.11 without leaving the brand. */
+  --support-border: oklch(0.58 0.13 88);
+
   /* Beryl — the dispersion accent. Reserved for the gauge and the spectrum. */
   --spectral: light-dark(oklch(0.51 0.1 205), oklch(0.78 0.1 197));
 
@@ -180,6 +190,9 @@
   --color-info: var(--info);
   --color-info-foreground: var(--info-foreground);
   --color-spectral: var(--spectral);
+  --color-support: var(--support);
+  --color-support-foreground: var(--support-foreground);
+  --color-support-border: var(--support-border);
   --color-border: var(--border);
   --color-input: var(--input);
   --color-ring: var(--ring);

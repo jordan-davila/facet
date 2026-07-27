@@ -229,7 +229,7 @@ export function SettingsView({ settings, update, reset }: SettingsViewProps) {
               href={SUPPORT_URL}
               target="_blank"
               rel="noopener noreferrer"
-              className="flex items-center justify-center gap-2 rounded-md bg-primary px-3 py-2.5 text-[13px] font-semibold text-primary-foreground transition-opacity hover:opacity-90"
+              className="flex items-center justify-center gap-2 rounded-md bg-support px-3 py-2.5 text-[13px] font-semibold text-support-foreground ring-1 ring-support-border transition-opacity ring-inset hover:opacity-85"
             >
               <Coffee className="size-4" aria-hidden />
               Buy me a coffee
