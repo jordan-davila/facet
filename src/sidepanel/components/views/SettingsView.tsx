@@ -218,6 +218,27 @@ export function SettingsView({ settings, update, reset }: SettingsViewProps) {
         </ul>
       </Section>
 
+      {hasSupportLink() && (
+        <Section title="Support">
+          <div className="space-y-2.5">
+            <p className="text-xs leading-relaxed text-muted-foreground">
+              Facet is free, and every check stays free. If it saved you some time, you can put
+              something in the tip jar.
+            </p>
+            <a
+              href={SUPPORT_URL}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="flex items-center justify-center gap-2 rounded-md bg-primary px-3 py-2.5 text-[13px] font-semibold text-primary-foreground transition-opacity hover:opacity-90"
+            >
+              <Coffee className="size-4" aria-hidden />
+              Buy me a coffee
+              <span className="sr-only">(opens in a new tab)</span>
+            </a>
+          </div>
+        </Section>
+      )}
+
       <Section title="About">
         <div className="space-y-2.5">
           <div className="flex items-center justify-between gap-3">
@@ -237,18 +258,6 @@ export function SettingsView({ settings, update, reset }: SettingsViewProps) {
               <ExternalLinkItem href={REPOSITORY_URL}>Source</ExternalLinkItem>
             </li>
           </ul>
-          {hasSupportLink() && (
-            <a
-              href={SUPPORT_URL}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="flex items-center justify-center gap-2 rounded-md border border-dashed px-3 py-2 text-xs font-medium transition-colors hover:bg-accent"
-            >
-              <Coffee className="size-3.5 text-muted-foreground" aria-hidden />
-              Buy me a coffee
-              <span className="sr-only">(opens in a new tab)</span>
-            </a>
-          )}
         </div>
       </Section>
     </div>
