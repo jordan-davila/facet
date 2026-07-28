@@ -31,18 +31,21 @@ function FacetRow({
         type="button"
         onClick={() => onSelect(result.facet)}
         aria-label={`${result.label}: score ${result.score}, ${summary}`}
-        className="flex w-full items-center gap-2.5 rounded-md border bg-card px-2.5 py-2 text-left transition-colors hover:bg-accent/60"
+        className="flex w-full items-center gap-2.5 rounded-md border bg-card px-2.5 py-2.5 text-left transition-colors hover:bg-accent/60"
       >
         <Icon className="size-4 shrink-0 text-muted-foreground" aria-hidden />
         {/* No score bar here: the profile above is already that chart, and
             drawing it twice makes the list twice as long for no new fact. */}
         <span className="min-w-0 flex-1">
-          <span className="block truncate text-[13px] leading-tight font-semibold">
+          <span className="block truncate text-[13px] leading-none font-semibold">
             {result.label}
           </span>
+          {/* The facet name and its findings are two different statements, so
+              they get a gap. Set flush, the mono line read as a subtitle of the
+              label rather than a separate fact about the page. */}
           <span
             className={cn(
-              'block truncate font-mono text-[11px] leading-tight',
+              'mt-1.5 block truncate font-mono text-[11px] leading-none',
               state === 'clear' ? 'text-muted-foreground' : STATE_TEXT[state]
             )}
             aria-hidden
