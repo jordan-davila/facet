@@ -19,7 +19,7 @@ const MAX_DESCRIPTION = 132
  * and must fit the store's limit, which package.json has no reason to respect.
  */
 const DESCRIPTION =
-  'Audit headings, ARIA landmarks, contrast, meta/SEO, hreflang, alt text, links and JSON-LD from one side panel.'
+  'Accessibility and SEO audit in one side panel: contrast, headings, ARIA, alt text, meta, hreflang and structured data.'
 
 if (DESCRIPTION.length > MAX_DESCRIPTION) {
   throw new Error(

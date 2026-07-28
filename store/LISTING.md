@@ -22,10 +22,10 @@ _36 characters._
 ### Summary / short description (max 132)
 
 ```
-Audit headings, ARIA landmarks, contrast, meta/SEO, hreflang, alt text, links and JSON-LD from one side panel.
+Accessibility and SEO audit in one side panel: contrast, headings, ARIA, alt text, meta, hreflang and structured data.
 ```
 
-_106 characters. Matches `description` in the manifest, which is where the store
+_118 characters. Matches `description` in the manifest, which is where the store
 pre-fills this from._
 
 ### Detailed description (max 16,000)
@@ -33,33 +33,35 @@ pre-fills this from._
 ```
 Facet inspects every facet of a page — accessibility, SEO and structured data — from one side panel, and takes you straight to whatever is wrong.
 
-Instead of running four extensions and reading four different reports, you open one panel next to the page you are working on and see all of it at once: a page score, a per-check profile, and a list of findings you can click to locate on the page.
+Instead of running four extensions and reading four different reports, you keep one panel open beside the page you are building. It scores nine checks on one scale, and every finding with a location has a crosshair that scrolls to the element and outlines it on the live page.
 
 WHAT IT CHECKS
 
-• Headings — a full document outline, plus missing or duplicate <h1>, skipped levels, and empty headings.
-• ARIA landmarks — landmark regions from both implicit and explicit roles: missing or duplicate main, unlabeled navigation, banner and contentinfo.
-• Color contrast — text contrast against WCAG AA or AAA thresholds, resolving real backgrounds and translucent layers, with correct large-text rules.
-• Meta & SEO — title, description, viewport, charset, lang, robots and canonical, with a search-result preview, character-count meters, and an Open Graph / Twitter card preview.
-• Canonical — presence, self-reference versus cross-reference, duplicates, and relative or insecure URLs.
-• Hreflang — language and region annotations: invalid tags, en-UK and other bad region codes, a missing self-reference, duplicate or shared targets, and a missing x-default.
-• Images — missing alt, decorative alt="", filename-like or over-long alt text, shown as a status gallery.
+• Contrast — text contrast against WCAG AA or AAA, resolving real backgrounds and translucent layers, with the correct large-text rule.
+• Headings — a full document outline, plus missing or duplicate h1, skipped levels, and empty headings.
+• ARIA landmarks — regions from implicit and explicit roles: missing or duplicate main, unlabeled navigation, banner and contentinfo.
+• Images — every image with its alt text quoted in full and its length, so you can judge whether the alt is useful rather than merely present. Filename-like and over-long alt is flagged.
+• Meta & SEO — title, description, viewport, charset, lang, robots and canonical, with a search-result preview, character-count meters and an Open Graph / Twitter card preview.
+• Hreflang — invalid language tags, region codes that do not exist (en-UK should be en-GB), a missing self-reference, duplicate or shared targets, and a missing x-default. Optionally checks that each alternate page actually responds.
+• Canonical — presence, self-reference versus cross-reference, duplicates, relative or insecure URLs.
 • Links — links with no discernible text, empty or placeholder href, ambiguous "click here" text, and target="_blank" without rel="noopener".
 • Structured data — JSON-LD validity and schema.org completeness for Article, Product, Recipe, Breadcrumb, FAQ, Organization and more: the fields Google needs for rich results.
 
-FIND IT, THEN FIX IT
+BUILT FOR THE FIX-AND-RECHECK LOOP
 
-Every finding with a location has a crosshair button that scrolls to the element and outlines it on the live page. Copy the whole report as Markdown to paste straight into an issue or a pull request. Press Alt+Shift+F to re-scan without leaving the keyboard.
+Re-scan and the score tells you whether you actually improved it — a green +4 or a red −3 against the previous scan of the same page. Copy the whole report as Markdown straight into an issue or a pull request. Press Alt+Shift+F to re-scan without leaving the keyboard.
 
 BUILT TO ITS OWN STANDARD
 
-An accessibility tool should pass its own checks. Facet's panel is fully keyboard navigable with arrow-key movement through the facet rail, announces completed scans through a live region, gives every control an accessible name and every focusable element a visible focus ring, respects reduced-motion preferences, and carries no text below its WCAG AA contrast threshold in either light or dark theme — verified by pointing Facet's own contrast auditor at Facet.
+An accessibility tool should pass its own checks. Facet's panel is fully keyboard navigable with arrow-key movement through the facet rail, announces completed scans through a live region, gives every control an accessible name and every focusable element a visible focus ring, respects reduced-motion preferences, and carries no text below its WCAG AA contrast threshold in either light or dark theme. That last claim is verified two ways: by pointing Facet's own contrast auditor at Facet, and by a test suite that reads the stylesheet and asserts every color pair on every run.
 
 PRIVATE BY CONSTRUCTION
 
-Facet has no server, no analytics and no telemetry. It reads a page only while its panel is open, and nothing it reads ever leaves your browser. The only thing it stores is your own settings.
+No server, no analytics, no telemetry, no accounts. By default Facet makes no network requests at all — it reads a page only while its panel is open, and nothing it reads ever leaves your browser. The only thing it stores is your own settings.
 
-By default it makes no network requests at all. One optional setting, "Check hreflang URLs", is off unless you turn it on; with it on, Facet asks each hreflang URL already published in the page's own markup whether it responds, sends no cookies or credentials, and keeps only the status code. It is open source: read the code at https://github.com/jordan-davila/facet
+One optional setting, "Check hreflang URLs", is off unless you turn it on. With it on, Facet asks each hreflang URL already published in the page's own markup whether it responds, sends no cookies or credentials, and keeps only the status code.
+
+Open source, MIT: https://github.com/jordan-davila/facet
 
 NOTES
 
@@ -78,15 +80,19 @@ Facet cannot scan browser-internal pages such as chrome:// or the Chrome Web Sto
 
 ## Graphic assets
 
-| Asset              | Size              | Required                            | Source                                                   |
-| ------------------ | ----------------- | ----------------------------------- | -------------------------------------------------------- |
-| Store icon         | 128×128 PNG       | Yes                                 | `icons/icon128.png`                                      |
-| Screenshots        | 1280×800 PNG, 1–5 | Yes (at least 1)                    | `pnpm store:shots` → `store/screenshots/`                |
-| Small promo tile   | 440×280 PNG       | Only to be considered for featuring | `pnpm store:shots` → `store/screenshots/promo-small.png` |
-| Marquee promo tile | 1400×560 PNG      | Optional                            | Not generated; only needed for the marquee slot          |
+| Asset              | Size              | Required                            | Source                                                     |
+| ------------------ | ----------------- | ----------------------------------- | ---------------------------------------------------------- |
+| Store icon         | 128×128 PNG       | Yes                                 | `icons/icon128.png`                                        |
+| Screenshots        | 1280×800 PNG, 1–5 | Yes (at least 1)                    | `pnpm store:shots` → `store/screenshots/` (five, in order) |
+| Small promo tile   | 440×280 PNG       | Only to be considered for featuring | `pnpm store:shots` → `store/screenshots/promo-small.png`   |
+| Marquee promo tile | 1400×560 PNG      | Optional                            | Not generated; only needed for the marquee slot            |
 
 Screenshots are generated from the real panel with canned data, so they never
-show a real user's browsing.
+show a real user's browsing. Upload them in numeric order — `01-overview` is the
+one that appears in search results.
+
+**Re-run `pnpm store:shots` after any UI change.** Images that no longer match
+the installed extension are worse than fewer images.
 
 ---
 

@@ -33,13 +33,6 @@ const SLIDES: Record<string, Slide> = {
     subhead:
       'Resolves translucent layers and computed colors, applies the correct large-text rule, and tells you what each failing sample needs.',
   },
-  headings: {
-    view: 'Headings',
-    eyebrow: 'Structure',
-    headline: 'The outline a screen reader actually hears',
-    subhead:
-      'Skipped levels, empty headings and duplicate h1s, with a crosshair on every finding to locate it on the live page.',
-  },
   meta: {
     view: 'Meta',
     eyebrow: 'SEO',
@@ -48,12 +41,19 @@ const SLIDES: Record<string, Slide> = {
       'Search-result and social-card previews, character-count meters for title and description, and every essential meta tag in one place.',
     theme: 'light',
   },
-  structured: {
-    view: 'Structured',
-    eyebrow: 'Rich results',
-    headline: 'JSON-LD, checked field by field',
+  images: {
+    view: 'Images',
+    eyebrow: 'Alt text',
+    headline: 'Read the alt text, not just its absence',
     subhead:
-      'schema.org validity and completeness for the types Google needs, with the required and recommended fields marked off.',
+      'Every image with its alt text quoted verbatim and its length, so you can judge whether it is useful — not merely present.',
+  },
+  hreflang: {
+    view: 'Hreflang',
+    eyebrow: 'Multilingual',
+    headline: 'Catch the hreflang bugs that hide',
+    subhead:
+      'Invalid tags, bad region codes, a missing self-reference, duplicate targets — and optionally whether each alternate page actually responds.',
   },
 }
 
