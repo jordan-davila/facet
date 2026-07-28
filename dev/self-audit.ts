@@ -20,12 +20,26 @@ function railButtons(): HTMLButtonElement[] {
   return [...document.querySelectorAll<HTMLButtonElement>('nav button')]
 }
 
+/**
+ * Elements a `<label for>` actually names. Per HTML-AAM a `<button>` is named
+ * by its own content, so a label pointing at one activates it but contributes
+ * no name — which is exactly how ten unnamed Radix switches slipped past an
+ * earlier version of this check.
+ */
+const NAMED_BY_LABEL = new Set(['INPUT', 'SELECT', 'TEXTAREA', 'METER', 'PROGRESS'])
+
 /** True when an element exposes a name assistive tech can announce. */
 function hasAccessibleName(el: Element): boolean {
   const label = el.getAttribute('aria-label')
   if (label?.trim()) return true
   if (el.getAttribute('aria-labelledby')) return true
-  if (el.id && document.querySelector(`label[for="${CSS.escape(el.id)}"]`)) return true
+  if (
+    NAMED_BY_LABEL.has(el.tagName) &&
+    el.id &&
+    document.querySelector(`label[for="${CSS.escape(el.id)}"]`)
+  ) {
+    return true
+  }
   return Boolean((el as HTMLElement).innerText?.trim())
 }
 

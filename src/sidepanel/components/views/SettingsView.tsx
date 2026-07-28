@@ -96,7 +96,15 @@ function ExternalLinkItem({ href, children }: { href: string; children: string }
   )
 }
 
-/** A label + hint pair that stays wired to its control. */
+/**
+ * A label + hint pair that stays wired to its control.
+ *
+ * The label carries an id because Radix renders Switch and Select as
+ * `<button>`, and a `<label for>` does not name a button: per HTML-AAM a
+ * button is named by its own content, so an empty switch ends up with no
+ * accessible name at all even though clicking the label still toggles it.
+ * Controls here point back with aria-labelledby instead.
+ */
 function Field({
   htmlFor,
   label,
@@ -111,7 +119,9 @@ function Field({
   return (
     <div className="flex items-center justify-between gap-3">
       <div className="min-w-0">
-        <Label htmlFor={htmlFor}>{label}</Label>
+        <Label id={`${htmlFor}-label`} htmlFor={htmlFor}>
+          {label}
+        </Label>
         {hint && (
           <p id={`${htmlFor}-hint`} className="mt-0.5 text-xs text-muted-foreground">
             {hint}
@@ -136,7 +146,13 @@ export function SettingsView({ settings, update, reset }: SettingsViewProps) {
             value={settings.theme}
             onValueChange={(value) => update({ theme: value as ThemePreference })}
           >
-            <SelectTrigger id="theme" size="sm" className="w-32" aria-describedby="theme-hint">
+            <SelectTrigger
+              id="theme"
+              size="sm"
+              className="w-32"
+              aria-labelledby="theme-label"
+              aria-describedby="theme-hint"
+            >
               <SelectValue />
             </SelectTrigger>
             <SelectContent>
@@ -155,7 +171,12 @@ export function SettingsView({ settings, update, reset }: SettingsViewProps) {
               value={settings.wcagLevel}
               onValueChange={(value) => update({ wcagLevel: value as WcagLevel })}
             >
-              <SelectTrigger id="wcag-level" size="sm" className="w-32">
+              <SelectTrigger
+                id="wcag-level"
+                size="sm"
+                className="w-32"
+                aria-labelledby="wcag-level-label"
+              >
                 <SelectValue />
               </SelectTrigger>
               <SelectContent>
@@ -188,6 +209,7 @@ export function SettingsView({ settings, update, reset }: SettingsViewProps) {
         >
           <Switch
             id="auto-scan"
+            aria-labelledby="auto-scan-label"
             aria-describedby="auto-scan-hint"
             checked={settings.autoScan}
             onCheckedChange={(value) => update({ autoScan: value })}
@@ -206,6 +228,7 @@ export function SettingsView({ settings, update, reset }: SettingsViewProps) {
               >
                 <Switch
                   id={`facet-${facet}`}
+                  aria-labelledby={`facet-${facet}-label`}
                   aria-describedby={`facet-${facet}-hint`}
                   checked={settings.enabled[facet]}
                   onCheckedChange={(value) =>
