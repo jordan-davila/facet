@@ -219,6 +219,11 @@ The URL is a single constant, `SUPPORT_URL` in
 [`src/core/links.ts`](src/core/links.ts). Setting it to an empty string removes
 the button entirely.
 
+## Changelog
+
+Version history is in [CHANGELOG.md](CHANGELOG.md), including which versions are
+actually published to the Chrome Web Store and which are only built.
+
 ## License
 
 MIT © Jordan Davila
