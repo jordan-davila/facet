@@ -30,6 +30,17 @@ export function installChromeStub(state: PreviewState = 'ready'): void {
         content_scripts: [{ js: ['src/content/index.ts'] }],
       }),
       onMessage: { addListener: () => {}, removeListener: () => {} },
+      // Stands in for the service worker's URL check.
+      sendMessage: async (message: { type: string; urls?: string[] }) => {
+        if (message.type !== 'checkUrls') return { ok: true, data: null }
+        return {
+          ok: true,
+          data: (message.urls ?? []).map((url, i) => ({
+            url,
+            status: i === 1 ? 404 : 200,
+          })),
+        }
+      },
     },
     storage: {
       sync: {

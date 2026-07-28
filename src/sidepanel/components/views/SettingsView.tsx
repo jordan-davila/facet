@@ -1,4 +1,4 @@
-import { Coffee, ExternalLink } from 'lucide-react'
+import { Coffee, ExternalLink, Globe } from 'lucide-react'
 import { useEffect, useState } from 'react'
 import { toast } from 'sonner'
 import { Button } from '@/components/ui/button'
@@ -216,19 +216,46 @@ export function SettingsView({ settings, update, reset }: SettingsViewProps) {
       </Section>
 
       <Section title="Scanning">
-        <Field
-          htmlFor="auto-scan"
-          label="Re-scan on navigation"
-          hint="Refresh automatically when the tab changes."
-        >
-          <Switch
-            id="auto-scan"
-            aria-labelledby="auto-scan-label"
-            aria-describedby="auto-scan-hint"
-            checked={settings.autoScan}
-            onCheckedChange={(value) => update({ autoScan: value })}
-          />
-        </Field>
+        <div className="space-y-3">
+          <Field
+            htmlFor="auto-scan"
+            label="Re-scan on navigation"
+            hint="Refresh automatically when the tab changes."
+          >
+            <Switch
+              id="auto-scan"
+              aria-labelledby="auto-scan-label"
+              aria-describedby="auto-scan-hint"
+              checked={settings.autoScan}
+              onCheckedChange={(value) => update({ autoScan: value })}
+            />
+          </Field>
+          <div className="border-t pt-3">
+            <Field
+              htmlFor="check-hreflang"
+              label="Check hreflang URLs"
+              hint="Requests each alternate page to see whether it responds."
+            >
+              <Switch
+                id="check-hreflang"
+                aria-labelledby="check-hreflang-label"
+                aria-describedby="check-hreflang-hint check-hreflang-network"
+                checked={settings.checkHreflangUrls}
+                onCheckedChange={(value) => update({ checkHreflangUrls: value })}
+              />
+            </Field>
+            {/* Stated on the switch itself, not buried in a policy: this is the
+                only thing in Facet that leaves the browser. */}
+            <p
+              id="check-hreflang-network"
+              className="mt-2 flex items-start gap-1.5 rounded-sm bg-muted px-2 py-1.5 text-[11px] leading-snug text-muted-foreground"
+            >
+              <Globe className="mt-px size-3 shrink-0" aria-hidden />
+              Everything else in Facet runs inside the page. This is the only check that makes a
+              network request, and it sends nothing but the request itself.
+            </p>
+          </div>
+        </div>
       </Section>
 
       <Section title="Checks">

@@ -57,7 +57,9 @@ An accessibility tool should pass its own checks. Facet's panel is fully keyboar
 
 PRIVATE BY CONSTRUCTION
 
-Facet has no server, no analytics and no telemetry, and makes no network requests at all. It reads a page only while its panel is open, and nothing it reads ever leaves your browser. The only thing it stores is your own settings. It is open source: read the code at https://github.com/jordan-davila/facet
+Facet has no server, no analytics and no telemetry. It reads a page only while its panel is open, and nothing it reads ever leaves your browser. The only thing it stores is your own settings.
+
+By default it makes no network requests at all. One optional setting, "Check hreflang URLs", is off unless you turn it on; with it on, Facet asks each hreflang URL already published in the page's own markup whether it responds, sends no cookies or credentials, and keeps only the status code. It is open source: read the code at https://github.com/jordan-davila/facet
 
 NOTES
 
@@ -135,7 +137,9 @@ Facet saves the user's own settings: theme, WCAG conformance level, which checks
 **Host permission (`http://*/*`, `https://*/*`)**
 
 ```
-Facet is a page-inspection tool, so it must be able to run on whichever page the user chooses to inspect. It cannot know in advance which sites those are, and a fixed list would make the extension useless on the sites its users actually work on. Facet reads a page only while its side panel is open, uses what it reads solely to render the on-screen report, and makes no network requests of any kind — nothing read from a page ever leaves the browser.
+Facet is a page-inspection tool, so it must be able to run on whichever page the user chooses to inspect. It cannot know in advance which sites those are, and a fixed list would make the extension useless on the sites its users actually work on. Facet reads a page only while its side panel is open and uses what it reads solely to render the on-screen report; nothing read from a page is ever transmitted.
+
+The host permission additionally covers one optional, user-enabled feature: a "Check hreflang URLs" setting, off by default, which requests the alternate-language URLs a page publishes in its own markup to report whether they respond. Those requests carry no credentials, retain only the HTTP status code, and go directly to the sites the inspected page names.
 ```
 
 **Remote code**

@@ -128,9 +128,12 @@
      to carry --*-foreground at 4.5:1 as a fill. */
   --destructive: light-dark(oklch(0.545 0.2 25), oklch(0.7 0.175 22));
   --destructive-foreground: light-dark(oklch(0.99 0 0), oklch(0.16 0.014 258));
-  --success: light-dark(oklch(0.53 0.14 156), oklch(0.75 0.14 160));
+  --success: light-dark(oklch(0.51 0.14 156), oklch(0.75 0.14 160));
   --success-foreground: light-dark(oklch(0.99 0 0), oklch(0.16 0.014 258));
-  --warning: light-dark(oklch(0.55 0.15 66), oklch(0.79 0.14 72));
+  /* Dark enough to clear 4.5:1 against --muted as well as --background;
+     warning text sits on both, and tuning it only against the lighter ground
+     left every muted surface a few hundredths short. */
+  --warning: light-dark(oklch(0.52 0.15 66), oklch(0.79 0.14 72));
   --warning-foreground: light-dark(oklch(0.99 0 0), oklch(0.16 0.014 258));
   --info: light-dark(oklch(0.52 0.11 240), oklch(0.74 0.1 240));
   --info-foreground: light-dark(oklch(0.99 0 0), oklch(0.16 0.014 258));

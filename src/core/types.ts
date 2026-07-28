@@ -73,4 +73,11 @@ export interface Settings {
   contrastMaxIssues: number
   /** Re-run the scan automatically when the active tab navigates. */
   autoScan: boolean
+  /**
+   * Request each hreflang target to see whether it responds.
+   *
+   * Off by default and the only setting that causes Facet to touch the
+   * network at all — everything else runs entirely inside the page.
+   */
+  checkHreflangUrls: boolean
 }

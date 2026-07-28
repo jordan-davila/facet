@@ -261,10 +261,17 @@ export function fixtureReport(facets: FacetId[], options: FixtureOptions = {}): 
     warnings: results.reduce((n, r) => n + r.warnings, 0),
     passes: results.reduce((n, r) => n + r.passes, 0),
   }
+  // Derived, not hardcoded: a fixed score made the preview claim the same 76
+  // no matter which checks ran, so turning one off changed nothing on screen.
+  const score =
+    results.length === 0
+      ? 100
+      : Math.round(results.reduce((sum, r) => sum + r.score, 0) / results.length)
+
   return {
     page: { url: 'https://loupe.example/field-notes', title: 'Field notes', lang: 'en' },
-    scannedAt: 0,
-    score: options.clean ? 100 : 76,
+    scannedAt: Date.now(),
+    score,
     totals,
     results,
   }

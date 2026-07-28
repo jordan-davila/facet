@@ -20,8 +20,14 @@ import { findingsSummary } from './lib/score'
 const SETTINGS_SCAN_DELAY_MS = 250
 
 /** What a screen reader hears when a scan lands. */
-function scanAnnouncement(report: AuditReport): string {
-  return `Scan complete. Page score ${report.score} out of 100. ${findingsSummary(
+function scanAnnouncement(report: AuditReport, previousScore: number | null): string {
+  const change =
+    previousScore === null || previousScore === report.score
+      ? ''
+      : ` ${Math.abs(report.score - previousScore)} points ${
+          report.score > previousScore ? 'better' : 'worse'
+        } than the last scan.`
+  return `Scan complete. Page score ${report.score} out of 100.${change} ${findingsSummary(
     report.totals.errors,
     report.totals.warnings
   )}.`
@@ -86,6 +92,7 @@ export function App() {
       return (
         <OverviewView
           report={state.report}
+          previousScore={state.previousScore}
           onSelectFacet={(facet) => setActive(facet)}
           onOpenSettings={() => setActive('settings')}
         />
@@ -128,7 +135,9 @@ export function App() {
       </div>
       {/* A scan changes the whole panel silently; say what landed. */}
       <p aria-live="polite" className="sr-only">
-        {state.status === 'ready' && state.report ? scanAnnouncement(state.report) : ''}
+        {state.status === 'ready' && state.report
+          ? scanAnnouncement(state.report, state.previousScore)
+          : ''}
       </p>
       <Toaster position="bottom-center" theme={settings.theme} />
     </TooltipProvider>

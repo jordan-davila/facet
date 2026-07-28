@@ -12,6 +12,9 @@ your data.
 crash reporting, and no advertising. Nothing it reads about a page ever leaves
 your browser.
 
+By default Facet makes **no network requests at all**. One optional setting,
+described below, is the single exception, and it is off unless you turn it on.
+
 ## What Facet reads
 
 When you open the side panel on a page, Facet runs its checks inside that page
@@ -24,8 +27,28 @@ and reads only what it needs to report on:
 - The active tab's URL, title and favicon, to label the panel
 
 All of this is read in memory, used to render the report, and discarded when the
-panel closes or scans again. **None of it is transmitted anywhere.** Facet makes
-no network requests of any kind.
+panel closes or scans again. **None of it is transmitted anywhere.**
+
+## The one optional network request
+
+Settings has a **"Check hreflang URLs"** switch, **off by default**. Leave it off
+and Facet never touches the network.
+
+Turn it on and, when a page carries `hreflang` annotations, Facet asks each
+annotated URL whether it responds — the same thing a search engine does, and the
+only way to tell a working alternate page from a broken one.
+
+- It requests **only the URLs already published in that page's own markup**.
+- It sends **no cookies or credentials** (`credentials: 'omit'`), and no
+  information about you, your browsing, or the page you are on.
+- It uses `HEAD` where the server allows it, so usually no page body is
+  transferred at all.
+- It keeps **only the HTTP status code** — 200, 404, and so on. Response bodies
+  are discarded and never stored.
+- It is capped at 40 URLs per scan with an 8-second timeout each.
+
+Those requests go directly from your browser to the sites the page names. They do
+not pass through any server belonging to Facet, because there isn't one.
 
 ## What Facet stores
 

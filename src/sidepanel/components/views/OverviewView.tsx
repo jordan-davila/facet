@@ -1,4 +1,4 @@
-import { ChevronRight, SlidersHorizontal } from 'lucide-react'
+import { ArrowDown, ArrowUp, ChevronRight, SlidersHorizontal } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import type { AuditReport, AuditResult, FacetId } from '@/core/types'
 import { cn } from '@/lib/utils'
@@ -10,8 +10,46 @@ import { Tally } from '../Tally'
 
 interface OverviewViewProps {
   report: AuditReport
+  /** This page's score on the previous scan, when there was one. */
+  previousScore: number | null
   onSelectFacet: (facet: FacetId) => void
   onOpenSettings: () => void
+}
+
+/**
+ * How the score moved since the last scan of this page.
+ *
+ * The whole workflow is fix, re-scan, fix again, and until now the gauge slid
+ * from one number to another with nothing to say that the developer had done
+ * it. This is the only place the panel acknowledges progress.
+ */
+function ScoreDelta({ from, to }: { from: number; to: number }) {
+  const change = to - from
+  if (change === 0) return null
+  const improved = change > 0
+  return (
+    <span
+      // Solid fills, not tints. A 15% tint lightens the ground out from under
+      // the text and drops it to 4.10:1; these pairs are the ones the token
+      // system defines to carry their own foreground.
+      className={cn(
+        'inline-flex items-center gap-0.5 rounded-sm px-1.5 py-0.5 text-[11px] font-bold faceplate',
+        improved
+          ? 'bg-success text-success-foreground'
+          : 'bg-destructive text-destructive-foreground'
+      )}
+    >
+      {improved ? (
+        <ArrowUp className="size-3" aria-hidden />
+      ) : (
+        <ArrowDown className="size-3" aria-hidden />
+      )}
+      {Math.abs(change)}
+      <span className="sr-only">
+        {improved ? ' points better than' : ' points worse than'} the last scan
+      </span>
+    </span>
+  )
 }
 
 function FacetRow({
@@ -65,7 +103,12 @@ function FacetRow({
   )
 }
 
-export function OverviewView({ report, onSelectFacet, onOpenSettings }: OverviewViewProps) {
+export function OverviewView({
+  report,
+  previousScore,
+  onSelectFacet,
+  onOpenSettings,
+}: OverviewViewProps) {
   // With nothing enabled the mean of zero facets is 100, which would claim a
   // perfect page nobody checked. Say what actually happened instead.
   if (report.results.length === 0) {
@@ -85,24 +128,26 @@ export function OverviewView({ report, onSelectFacet, onOpenSettings }: Overview
     )
   }
 
+  const { errors, warnings, passes } = report.totals
+
   return (
     <div className="space-y-4">
+      {/* One hero block, not four. The gauge already states the score, so the
+          prose beneath it carries the tally instead of repeating the number. */}
       <div className="flex items-center gap-3.5">
-        <FacetGauge score={report.score} />
-        <div className="min-w-0">
-          <h2 className={cn('text-lg leading-tight font-semibold', scoreColor(report.score))}>
-            {scoreLabel(report.score)}
+        <FacetGauge score={report.score} size={72} />
+        <div className="min-w-0 flex-1">
+          <h2 className="flex items-center gap-2">
+            <span className={cn('text-lg leading-none font-semibold', scoreColor(report.score))}>
+              {scoreLabel(report.score)}
+            </span>
+            {previousScore !== null && <ScoreDelta from={previousScore} to={report.score} />}
           </h2>
-          <p className="mt-0.5 text-xs text-muted-foreground">
-            Scored {report.score} out of 100 across {report.results.length}{' '}
-            {report.results.length === 1 ? 'check' : 'checks'}.
-          </p>
+          <Tally errors={errors} warnings={warnings} passes={passes} />
         </div>
       </div>
 
       <Spectrum report={report} />
-
-      <Tally report={report} />
 
       <section aria-labelledby="facet-list-heading">
         <h3 id="facet-list-heading" className="mb-2 eyebrow">

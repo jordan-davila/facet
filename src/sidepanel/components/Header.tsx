@@ -69,7 +69,7 @@ export function Header({ tab, report, scanning, onRescan }: HeaderProps) {
               loud copies of the same number would fight each other. */}
           <span
             className={cn(
-              'rounded-sm bg-muted px-1.5 py-1 font-mono text-[11px] font-semibold',
+              'rounded-sm px-1 py-1 font-mono text-[11px] font-semibold',
               scoreColor(report.score)
             )}
           >

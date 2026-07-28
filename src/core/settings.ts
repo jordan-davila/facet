@@ -16,6 +16,7 @@ export const DEFAULT_SETTINGS: Settings = {
   enabled: allFacetsEnabled(),
   contrastMaxIssues: 100,
   autoScan: true,
+  checkHreflangUrls: false,
 }
 
 /** Merge stored settings over the defaults so new facets/fields are filled in. */

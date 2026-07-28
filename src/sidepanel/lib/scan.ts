@@ -1,4 +1,13 @@
-import type { AuditReport, Settings } from '@/core/types'
+import type { HreflangData } from '@/audits/hreflang'
+import {
+  type UrlStatus,
+  reachabilityIssues,
+  reachabilityTargets,
+} from '@/audits/hreflang-reachability'
+import { buildResult } from '@/audits/result'
+import type { Result, WorkerMessage } from '@/core/messages'
+import { overallScore } from '@/core/scoring'
+import type { AuditReport, AuditResult, Settings } from '@/core/types'
 import { sendToTab } from '@/lib/messaging'
 
 export interface ActiveTab {
@@ -41,7 +50,58 @@ export async function runScan(tabId: number, settings: Settings): Promise<AuditR
   await ensureContentScript(tabId)
   const result = await sendToTab<AuditReport>(tabId, { type: 'runAudit', settings })
   if (!result.ok) throw new Error(result.error)
-  return result.data
+  if (!settings.checkHreflangUrls) return result.data
+  return withHreflangReachability(result.data)
+}
+
+/**
+ * Fold hreflang reachability into a finished report.
+ *
+ * Deliberately a second pass rather than part of the audit engine: the engine
+ * stays synchronous and pure, and the one feature that touches the network is
+ * the one feature that can be skipped without touching anything else.
+ */
+async function withHreflangReachability(report: AuditReport): Promise<AuditReport> {
+  const index = report.results.findIndex((r) => r.facet === 'hreflang')
+  if (index === -1) return report
+
+  const hreflang = report.results[index] as AuditResult<HreflangData>
+  const urls = reachabilityTargets(hreflang.data.entries)
+  if (urls.length === 0) return report
+
+  const statuses = await checkUrlsInWorker(urls)
+  if (statuses.length === 0) return report
+
+  const merged = buildResult(
+    'hreflang',
+    [...hreflang.issues, ...reachabilityIssues(hreflang.data.entries, statuses)],
+    hreflang.data
+  )
+  const results = report.results.map((r, i) => (i === index ? merged : r))
+  return { ...report, results, score: overallScore(results), totals: totalsOf(results) }
+}
+
+function totalsOf(results: AuditResult[]): AuditReport['totals'] {
+  return results.reduce(
+    (acc, r) => ({
+      errors: acc.errors + r.errors,
+      warnings: acc.warnings + r.warnings,
+      passes: acc.passes + r.passes,
+    }),
+    { errors: 0, warnings: 0, passes: 0 }
+  )
+}
+
+/** Ask the service worker to fetch statuses; it holds the host permissions. */
+async function checkUrlsInWorker(urls: string[]): Promise<UrlStatus[]> {
+  try {
+    const message: WorkerMessage = { type: 'checkUrls', urls }
+    const response = (await chrome.runtime.sendMessage(message)) as Result<UrlStatus[]> | undefined
+    return response?.ok ? response.data : []
+  } catch {
+    // Without a reachable worker the rest of the report is still valid.
+    return []
+  }
 }
 
 /** True when the element was found and outlined on the page. */

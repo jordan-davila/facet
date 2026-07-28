@@ -10,6 +10,13 @@ export interface ScanState {
   report: AuditReport | null
   error: string | null
   tab: ActiveTab | null
+  /**
+   * The score this same page scored on the previous scan, when there was one.
+   *
+   * Only carried across scans of the same URL: comparing a score against a
+   * different page's would be worse than showing nothing.
+   */
+  previousScore: number | null
 }
 
 export interface UseScan {
@@ -18,7 +25,13 @@ export interface UseScan {
   highlight: (selector: string) => void
 }
 
-const INITIAL: ScanState = { status: 'idle', report: null, error: null, tab: null }
+const INITIAL: ScanState = {
+  status: 'idle',
+  report: null,
+  error: null,
+  tab: null,
+  previousScore: null,
+}
 
 export function useScan(): UseScan {
   const [state, setState] = useState<ScanState>(INITIAL)
@@ -36,7 +49,13 @@ export function useScan(): UseScan {
       const tab = await getActiveTab()
       if (!isCurrent()) return
       if (!tab) {
-        setState({ status: 'error', report: null, error: 'No active tab found.', tab: null })
+        setState({
+          status: 'error',
+          report: null,
+          error: 'No active tab found.',
+          tab: null,
+          previousScore: null,
+        })
         return
       }
       tabIdRef.current = tab.id
@@ -44,16 +63,35 @@ export function useScan(): UseScan {
       // must still say which page failed rather than falling back to "Facet".
       setState((prev) => ({ ...prev, tab }))
       if (!isSupported(tab.url)) {
-        setState({ status: 'unsupported', report: null, error: null, tab })
+        setState({
+          status: 'unsupported',
+          report: null,
+          error: null,
+          tab,
+          previousScore: null,
+        })
         return
       }
       const report = await runScan(tab.id, settings)
       if (!isCurrent()) return
-      setState({ status: 'ready', report, error: null, tab })
+      setState((prev) => ({
+        status: 'ready',
+        report,
+        error: null,
+        tab,
+        previousScore:
+          prev.report && prev.report.page.url === report.page.url ? prev.report.score : null,
+      }))
     } catch (error) {
       if (!isCurrent()) return
       const message = error instanceof Error ? error.message : 'Scan failed.'
-      setState((prev) => ({ status: 'error', report: null, error: message, tab: prev.tab }))
+      setState((prev) => ({
+        status: 'error',
+        report: null,
+        error: message,
+        tab: prev.tab,
+        previousScore: null,
+      }))
     }
   }, [])
 
