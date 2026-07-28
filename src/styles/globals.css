@@ -135,6 +135,13 @@
   --info: light-dark(oklch(0.52 0.11 240), oklch(0.74 0.1 240));
   --info-foreground: light-dark(oklch(0.99 0 0), oklch(0.16 0.014 258));
 
+  /* The product mark's violet, matching scripts/generate-icons.mjs. Same in
+     both themes: this is the brand mark, not a themed surface. It is
+     deliberately not --primary — the icon competes for attention in a browser
+     toolbar, where the panel is trying not to. */
+  --mark-top: #a755f7;
+  --mark-bottom: #4c1d95;
+
   /* Buy Me a Coffee's own brand yellow. A brand mark, so it is deliberately
      the same in both themes, and deliberately far lighter and yellower than
      --warning so a support button never reads as a caution. */
@@ -193,6 +200,8 @@
   --color-support: var(--support);
   --color-support-foreground: var(--support-foreground);
   --color-support-border: var(--support-border);
+  --color-mark-top: var(--mark-top);
+  --color-mark-bottom: var(--mark-bottom);
   --color-border: var(--border);
   --color-input: var(--input);
   --color-ring: var(--ring);

@@ -1,4 +1,4 @@
-import { Coffee, Gem } from 'lucide-react'
+import { Coffee } from 'lucide-react'
 import { useRef } from 'react'
 import { Tooltip, TooltipContent, TooltipTrigger } from '@/components/ui/tooltip'
 import { SUPPORT_URL, hasSupportLink } from '@/core/links'
@@ -6,6 +6,7 @@ import type { AuditReport } from '@/core/types'
 import { cn } from '@/lib/utils'
 import { type NavId, type NavItem, PRIMARY_NAV, SETTINGS_NAV, isFacetId } from '../lib/nav'
 import { findingsSummary } from '../lib/score'
+import { FacetMark } from './FacetMark'
 
 interface SidebarProps {
   active: NavId
@@ -159,10 +160,7 @@ export function Sidebar({ active, onSelect, report }: SidebarProps) {
       aria-label="Facets"
       className="flex w-14 shrink-0 flex-col items-center gap-1 border-r bg-card py-3"
     >
-      <span className="mb-2 flex size-9 items-center justify-center rounded-md bg-primary text-primary-foreground">
-        <Gem className="size-5" aria-hidden />
-        <span className="sr-only">Facet</span>
-      </span>
+      <FacetMark className="mb-2" />
       {PRIMARY_NAV.map((item, index) => (
         <NavButton
           key={item.id}
@@ -180,9 +178,7 @@ export function Sidebar({ active, onSelect, report }: SidebarProps) {
       ))}
 
       {/* Pinned to the foot of the rail: leaving Facet, not moving within it.
-          Settings comes first in DOM order so a keyboard user moving from the
-          rail into the panel never has to pass through a donation link. */}
-      {/* column-reverse: Settings comes first in the DOM so it precedes the
+          column-reverse puts Settings first in the DOM so it precedes the
           donation link in the tab order, while the tip jar still sits above it
           visually. Source order is the tab order; only the paint is flipped. */}
       <div className="mt-auto flex flex-col-reverse items-center gap-1">

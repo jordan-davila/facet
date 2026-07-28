@@ -121,10 +121,13 @@ function gemColor(u, v) {
 
 /**
  * Below this, cut lines are thinner than a pixel and the stone turns to mush,
- * so small sizes get a simplified, larger silhouette instead. Shipping distinct
+ * so the smallest size gets a simplified, larger silhouette. Shipping distinct
  * geometry per size is what icon sets do; scaling one drawing down is not.
+ *
+ * Only 16 simplifies. 32 has room for the full cut, and simplifying it too
+ * made the toolbar and the store listing look like two different marks.
  */
-const SIMPLIFY_AT_OR_BELOW = 32
+const SIMPLIFY_AT_OR_BELOW = 16
 
 /** Small renders enlarge the stone to buy back the detail they give up. */
 const SIMPLE_SCALE = 1.34
@@ -138,10 +141,13 @@ function sample(x, y, size, targetSize) {
   const u = ((x / size) * 2 - 1) / scale
   const v = ((y / size) * 2 - 1) / scale
   if (insideGem(u, v)) {
-    // One cut line survives at 16px; the rest would only add noise.
+    // Two cut lines survive at 16px: the girdle, and the table edge that makes
+    // a step cut a step cut. Anything more closes up into a grey smear.
     if (simple) {
-      const onGirdle = Math.abs(v - GIRDLE_Y) < 0.055
-      return onGirdle ? [...FACET_EDGE, 255] : [...GEM_LIGHT, 255]
+      const onCut =
+        Math.abs(v - GIRDLE_Y) < 0.055 ||
+        (Math.abs(v - TABLE_Y) < 0.055 && Math.abs(u) < TABLE_HALF)
+      return onCut ? [...FACET_EDGE, 255] : [...GEM_LIGHT, 255]
     }
     const [r, g, b] = gemColor(u, v)
     return [r, g, b, 255]
