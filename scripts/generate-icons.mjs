@@ -120,35 +120,25 @@ function gemColor(u, v) {
 }
 
 /**
- * Below this, cut lines are thinner than a pixel and the stone turns to mush,
- * so the smallest size gets a simplified, larger silhouette. Shipping distinct
- * geometry per size is what icon sets do; scaling one drawing down is not.
- *
- * Only 16 simplifies. 32 has room for the full cut, and simplifying it too
- * made the toolbar and the store listing look like two different marks.
+ * Optical sizing: at and below this, the stone is drawn larger relative to the
+ * canvas. Every size draws the *same* cuts — an earlier version swapped in a
+ * plain silhouette here, which made the toolbar and the store listing look
+ * like two different marks. The problem was never the detail, it was that the
+ * stone was only half the canvas with nothing left over for it.
  */
-const SIMPLIFY_AT_OR_BELOW = 16
+const ENLARGE_AT_OR_BELOW = 16
 
-/** Small renders enlarge the stone to buy back the detail they give up. */
-const SIMPLE_SCALE = 1.34
+/** How much bigger the stone sits in a small canvas. */
+const SMALL_SCALE = 1.34
 
 /** Sample one (supersampled) pixel: returns [r, g, b, a]. */
 function sample(x, y, size, targetSize) {
   if (!insideRoundedSquare(x, y, size)) return [0, 0, 0, 0]
   const bg = lerpColor(GRADIENT_TOP, GRADIENT_BOTTOM, y / size)
-  const simple = targetSize <= SIMPLIFY_AT_OR_BELOW
-  const scale = simple ? SIMPLE_SCALE : 1
+  const scale = targetSize <= ENLARGE_AT_OR_BELOW ? SMALL_SCALE : 1
   const u = ((x / size) * 2 - 1) / scale
   const v = ((y / size) * 2 - 1) / scale
   if (insideGem(u, v)) {
-    // Two cut lines survive at 16px: the girdle, and the table edge that makes
-    // a step cut a step cut. Anything more closes up into a grey smear.
-    if (simple) {
-      const onCut =
-        Math.abs(v - GIRDLE_Y) < 0.055 ||
-        (Math.abs(v - TABLE_Y) < 0.055 && Math.abs(u) < TABLE_HALF)
-      return onCut ? [...FACET_EDGE, 255] : [...GEM_LIGHT, 255]
-    }
     const [r, g, b] = gemColor(u, v)
     return [r, g, b, 255]
   }

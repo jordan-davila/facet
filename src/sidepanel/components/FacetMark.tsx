@@ -43,6 +43,18 @@ const CUTS = [
   `M${TABLE_R},${WAIST} L${CENTRE},${TIP}`,
 ].join(' ')
 
+/**
+ * viewBox cropped to the stone's own bounds rather than the 0–24 square.
+ *
+ * The icon's geometry is sized for a canvas that needs breathing room around
+ * it; reusing that square here left roughly half the tile as margin and the
+ * stone looked shrunken. Cropping lets the tile provide the padding instead.
+ */
+const PAD = 0.6
+const BOX_X = +(GIRDLE_L - PAD).toFixed(2)
+const BOX_Y = +(TOP - PAD).toFixed(2)
+const BOX_SIZE = +(GIRDLE_R - GIRDLE_L + PAD * 2).toFixed(2)
+
 export function FacetMark({ className }: { className?: string }) {
   return (
     <span
@@ -51,9 +63,19 @@ export function FacetMark({ className }: { className?: string }) {
         className
       )}
     >
-      <svg viewBox="0 0 24 24" className="size-5" aria-hidden>
+      <svg
+        viewBox={`${BOX_X} ${BOX_Y} ${BOX_SIZE} ${BOX_SIZE}`}
+        className="size-[22px]"
+        aria-hidden
+      >
         <polygon points={OUTLINE} fill="#fff" />
-        <path d={CUTS} stroke="var(--mark-bottom)" strokeWidth="1.4" fill="none" />
+        <path
+          d={CUTS}
+          stroke="var(--mark-bottom)"
+          strokeWidth="1.3"
+          strokeLinecap="round"
+          fill="none"
+        />
       </svg>
       <span className="sr-only">Facet</span>
     </span>
