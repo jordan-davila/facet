@@ -4,6 +4,7 @@ import type { AuditReport, AuditResult, FacetId, PageInfo, Settings } from '@/co
 import { auditCanonical } from './canonical'
 import { auditContrast } from './contrast'
 import { auditHeadings } from './headings'
+import { auditHreflang } from './hreflang'
 import { auditImages } from './images'
 import { auditJsonLd } from './jsonld'
 import { auditLandmarks } from './landmarks'
@@ -31,6 +32,8 @@ function runOne(facet: FacetId, doc: Document, settings: Settings, page: PageInf
       return auditMeta(doc)
     case 'canonical':
       return auditCanonical(doc, page.url)
+    case 'hreflang':
+      return auditHreflang(doc, page.url)
     case 'images':
       return auditImages(doc)
     case 'links':

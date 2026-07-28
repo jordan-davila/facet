@@ -14,6 +14,13 @@ const STATUS_RING: Record<ImageStatus, string> = {
   flagged: 'ring-warning',
 }
 
+const STATUS_TEXT: Record<ImageStatus, string> = {
+  ok: 'text-success',
+  decorative: 'text-muted-foreground',
+  missing: 'text-destructive',
+  flagged: 'text-warning',
+}
+
 const STATUS_LABEL: Record<ImageStatus, string> = {
   ok: 'Has alt text',
   decorative: 'Decorative (alt="")',
@@ -21,14 +28,55 @@ const STATUS_LABEL: Record<ImageStatus, string> = {
   flagged: 'Alt needs review',
 }
 
-function Thumb({
+/** What to print when there is no alt text worth quoting. */
+const STATUS_PLACEHOLDER: Record<ImageStatus, string> = {
+  ok: 'named by aria-label',
+  decorative: 'intentionally empty',
+  missing: 'no alt attribute',
+  flagged: 'alt needs review',
+}
+
+function Thumb({ image }: { image: ImageInfo }) {
+  const [broken, setBroken] = useState(false)
+  return (
+    <span
+      className={cn(
+        'flex size-10 shrink-0 items-center justify-center overflow-hidden rounded-sm bg-muted ring-2',
+        STATUS_RING[image.status]
+      )}
+      aria-hidden
+    >
+      {image.src && !broken ? (
+        <img
+          src={image.src}
+          alt=""
+          referrerPolicy="no-referrer"
+          loading="lazy"
+          className="size-full object-cover"
+          onError={() => setBroken(true)}
+        />
+      ) : (
+        <ImageOff className="size-4 text-muted-foreground" />
+      )}
+    </span>
+  )
+}
+
+/**
+ * A row per image, showing the alt text verbatim.
+ *
+ * A thumbnail grid can only tell you an image *has* alt text; judging whether
+ * it is any good means reading it, so the words are the row's main content and
+ * the picture is the supporting detail.
+ */
+function ImageRow({
   image,
   onHighlight,
 }: {
   image: ImageInfo
   onHighlight: (selector: string) => void
 }) {
-  const [broken, setBroken] = useState(false)
+  const hasAlt = Boolean(image.alt)
   const status = STATUS_LABEL[image.status]
 
   return (
@@ -36,43 +84,35 @@ function Thumb({
       <button
         type="button"
         onClick={() => onHighlight(image.selector)}
-        aria-label={`${status}${image.alt ? `: “${image.alt}”` : ''}. Show on the page.`}
-        className={cn(
-          'flex aspect-square w-full items-center justify-center overflow-hidden rounded-sm bg-muted ring-2 transition-transform hover:scale-[1.04]',
-          STATUS_RING[image.status]
-        )}
+        aria-label={`${status}. ${
+          hasAlt ? `Alt text: “${image.alt}”` : STATUS_PLACEHOLDER[image.status]
+        }${image.note ? `. ${image.note}` : ''}. Show on the page.`}
+        className="flex w-full items-start gap-2.5 rounded-sm p-1 text-left transition-colors hover:bg-accent/60"
       >
-        {image.src && !broken ? (
-          <img
-            src={image.src}
-            alt=""
-            referrerPolicy="no-referrer"
-            loading="lazy"
-            className="size-full object-cover"
-            onError={() => setBroken(true)}
-          />
-        ) : (
-          <ImageOff className="size-4 text-muted-foreground" aria-hidden />
+        <Thumb image={image} />
+        <span className="min-w-0 flex-1 pt-0.5">
+          {/* The alt text belongs to the page, so it speaks in mono. The
+              placeholder is Facet talking, and stays in sans. */}
+          {hasAlt ? (
+            <span className="line-clamp-2 font-mono text-[11px] leading-snug">{image.alt}</span>
+          ) : (
+            <span className={cn('text-xs italic', STATUS_TEXT[image.status])}>
+              {STATUS_PLACEHOLDER[image.status]}
+            </span>
+          )}
+          {image.note && (
+            <span className={cn('mt-0.5 block text-[11px]', STATUS_TEXT[image.status])}>
+              {image.note}
+            </span>
+          )}
+        </span>
+        {hasAlt && (
+          <span className="shrink-0 pt-1.5 eyebrow tabular-nums" aria-hidden>
+            {image.alt?.length}
+          </span>
         )}
       </button>
     </li>
-  )
-}
-
-/** Ring color alone can't carry meaning, so the grid states its key. */
-function Legend() {
-  return (
-    <ul className="mt-2.5 flex flex-wrap gap-x-3 gap-y-1 border-t pt-2.5">
-      {(Object.keys(STATUS_LABEL) as ImageStatus[]).map((status) => (
-        <li key={status} className="flex items-center gap-1.5">
-          <span
-            className={cn('size-2 shrink-0 rounded-full ring-2 ring-inset', STATUS_RING[status])}
-            aria-hidden
-          />
-          <span className="text-[11px] text-muted-foreground">{STATUS_LABEL[status]}</span>
-        </li>
-      ))}
-    </ul>
   )
 }
 
@@ -85,14 +125,11 @@ export function ImagesView({ result, onHighlight }: FacetViewProps) {
         {data.images.length === 0 ? (
           <p className="text-[13px] text-muted-foreground">No images on this page.</p>
         ) : (
-          <>
-            <ul className="grid grid-cols-4 gap-1.5">
-              {data.images.map((image, index) => (
-                <Thumb key={index} image={image} onHighlight={onHighlight} />
-              ))}
-            </ul>
-            <Legend />
-          </>
+          <ul className="-mx-1 flex flex-col divide-y">
+            {data.images.map((image, index) => (
+              <ImageRow key={index} image={image} onHighlight={onHighlight} />
+            ))}
+          </ul>
         )}
       </Section>
       <IssueList

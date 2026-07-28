@@ -9,6 +9,7 @@ export type FacetId =
   | 'contrast'
   | 'meta'
   | 'canonical'
+  | 'hreflang'
   | 'images'
   | 'links'
   | 'structured-data'

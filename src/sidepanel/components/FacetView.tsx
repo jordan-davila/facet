@@ -3,6 +3,7 @@ import type { AuditReport, FacetId } from '@/core/types'
 import { CanonicalView } from './views/CanonicalView'
 import { ContrastView } from './views/ContrastView'
 import { HeadingsView } from './views/HeadingsView'
+import { HreflangView } from './views/HreflangView'
 import { ImagesView } from './views/ImagesView'
 import { LandmarksView } from './views/LandmarksView'
 import { LinksView } from './views/LinksView'
@@ -16,6 +17,7 @@ const VIEWS: Record<FacetId, React.ComponentType<FacetViewProps>> = {
   contrast: ContrastView,
   meta: MetaView,
   canonical: CanonicalView,
+  hreflang: HreflangView,
   images: ImagesView,
   links: LinksView,
   'structured-data': StructuredDataView,

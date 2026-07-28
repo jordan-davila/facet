@@ -1,30 +1,45 @@
+import { FACET_ORDER } from '@/core/constants'
 import { cn } from '@/lib/utils'
 import { scoreColor } from '../lib/score'
 
 interface FacetGaugeProps {
   score: number
+  /** Edges to cut. Defaults to one per facet, which is the whole point. */
+  sides?: number
   size?: number
   stroke?: number
 }
 
-/** Vertices of a regular octagon, flat edge on top, inset by half the stroke. */
-function octagonPoints(size: number, stroke: number): string {
+/** Below this the shape stops reading as a cut stone and starts reading as an arrow. */
+const MIN_SIDES = 5
+
+/** Vertices of a regular polygon, flat edge on top, inset by half the stroke. */
+function polygonPoints(size: number, stroke: number, sides: number): string {
   const r = (size - stroke) / 2
   const c = size / 2
-  return Array.from({ length: 8 }, (_, i) => {
+  const step = (Math.PI * 2) / sides
+  return Array.from({ length: sides }, (_, i) => {
     // Rotate by half a step so the shape rests on a flat edge rather than a point.
-    const angle = (Math.PI / 4) * i + Math.PI / 8
+    const angle = step * i + step / 2
     return `${(c + r * Math.sin(angle)).toFixed(2)},${(c - r * Math.cos(angle)).toFixed(2)}`
   }).join(' ')
 }
 
 /**
- * The page score, cut as an octagon — one edge per facet Facet inspects.
- * A circle would say nothing; eight sides say what is being counted.
+ * The page score, cut as a polygon with one edge per facet Facet inspects.
+ *
+ * The side count is derived rather than fixed: the shape's whole claim is that
+ * it counts something, so it has to keep counting correctly when a facet is
+ * added. It started life as an octagon because there were eight checks.
  */
-export function FacetGauge({ score, size = 88, stroke = 6 }: FacetGaugeProps) {
+export function FacetGauge({
+  score,
+  sides = FACET_ORDER.length,
+  size = 88,
+  stroke = 6,
+}: FacetGaugeProps) {
   const clamped = Math.max(0, Math.min(100, score))
-  const points = octagonPoints(size, stroke)
+  const points = polygonPoints(size, stroke, Math.max(MIN_SIDES, sides))
 
   return (
     <div className="relative shrink-0" style={{ width: size, height: size }} aria-hidden>

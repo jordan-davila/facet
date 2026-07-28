@@ -63,6 +63,7 @@ const VIEWS = [
   'Contrast',
   'Meta',
   'Canonical',
+  'Hreflang',
   'Images',
   'Links',
   'Structured',

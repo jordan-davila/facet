@@ -17,6 +17,7 @@ into a single dashboard built with [shadcn/ui](https://ui.shadcn.com).
 | **Contrast**        | Text color contrast against **WCAG AA or AAA** thresholds, resolving real backgrounds and alpha compositing, with large-text rules.                            |
 | **Meta & SEO**      | Title, description, viewport, charset, `lang`, robots, canonical, plus a search-result preview, Open Graph and Twitter card preview.                           |
 | **Canonical**       | Canonical link presence, self-reference vs. cross-reference, duplicates, relative/`http` URLs.                                                                 |
+| **Hreflang**        | Language and region annotations: invalid tags, bad region codes (`en-UK`), a missing self-reference, duplicate or shared targets, and a missing `x-default`.   |
 | **Images**          | Missing `alt`, decorative (`alt=""`), filename-like or over-long alt text — shown as a status gallery.                                                         |
 | **Links**           | Links with no discernible text, empty/placeholder `href`, ambiguous ("click here") text, and `target="_blank"` without `rel="noopener"`.                       |
 | **Structured Data** | JSON-LD validity and schema.org completeness for Article, Product, Recipe, Breadcrumb, FAQ, Organization, and more — the fields Google needs for rich results. |
@@ -125,9 +126,10 @@ The panel is treated as a measuring instrument rather than a dashboard.
   never competes with red / amber / green for attention. A fifth color, beryl,
   marks the "Good" score band — a page scoring 75–89 still has findings, and
   painting it the same green as a clean page would quietly say otherwise.
-- **The gauge is an octagon**, one edge per facet, because eight sides say what
-  is being counted; the **facet profile** below it is one bar per facet, height
-  by score, and doubles as navigation.
+- **The gauge is a polygon with one edge per check**, because a shape that
+  counts says what is being measured where a circle says nothing. The side
+  count is derived from the facet list, so it stays true as checks are added.
+  The **facet profile** below it is one bar per facet, height by score.
 - **Themes are declared once** with CSS `light-dark()`, and Tailwind's `dark:`
   variant is redefined to fire on the same signal, so an explicit Light choice
   on a dark-mode OS can't leave dark-only rules behind.
@@ -154,7 +156,7 @@ Facet is an accessibility tool, so the panel meets the bar it measures:
 - The keyboard shortcut goes through Chrome's `commands` API, so it is
   remappable — which is what keeps it clear of WCAG 2.1.4.
 - The facet profile chart is hidden from assistive tech on purpose: the Checks
-  list below states the same eight scores in words and is the keyboard path to
+  list below states the same scores in words and is the keyboard path to
   each facet, so exposing both would double every tab stop to reach the same
   destinations.
 

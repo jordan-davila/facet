@@ -24,7 +24,7 @@ const SLIDES: Record<string, Slide> = {
     eyebrow: 'One panel',
     headline: 'Every facet of a page, in one panel',
     subhead:
-      'A page score, a per-check profile, and eight audits at a glance — instead of four extensions and four reports.',
+      'A page score, a per-check profile, and every audit at a glance — instead of four extensions and four reports.',
   },
   contrast: {
     view: 'Contrast',

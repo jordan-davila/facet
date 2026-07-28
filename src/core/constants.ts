@@ -7,6 +7,7 @@ export const FACET_ORDER: FacetId[] = [
   'contrast',
   'meta',
   'canonical',
+  'hreflang',
   'images',
   'links',
   'structured-data',
@@ -38,6 +39,10 @@ export const FACET_META: Record<FacetId, FacetMeta> = {
   canonical: {
     label: 'Canonical',
     blurb: 'Canonical link presence and correctness.',
+  },
+  hreflang: {
+    label: 'Hreflang',
+    blurb: 'Language and region annotations for multilingual pages.',
   },
   images: {
     label: 'Images',

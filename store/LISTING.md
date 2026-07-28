@@ -22,7 +22,7 @@ _36 characters._
 ### Summary / short description (max 132)
 
 ```
-Audit headings, ARIA landmarks, color contrast, meta/SEO, alt text, links and JSON-LD from one side panel.
+Audit headings, ARIA landmarks, contrast, meta/SEO, hreflang, alt text, links and JSON-LD from one side panel.
 ```
 
 _106 characters. Matches `description` in the manifest, which is where the store
@@ -42,6 +42,7 @@ WHAT IT CHECKS
 • Color contrast — text contrast against WCAG AA or AAA thresholds, resolving real backgrounds and translucent layers, with correct large-text rules.
 • Meta & SEO — title, description, viewport, charset, lang, robots and canonical, with a search-result preview, character-count meters, and an Open Graph / Twitter card preview.
 • Canonical — presence, self-reference versus cross-reference, duplicates, and relative or insecure URLs.
+• Hreflang — language and region annotations: invalid tags, en-UK and other bad region codes, a missing self-reference, duplicate or shared targets, and a missing x-default.
 • Images — missing alt, decorative alt="", filename-like or over-long alt text, shown as a status gallery.
 • Links — links with no discernible text, empty or placeholder href, ambiguous "click here" text, and target="_blank" without rel="noopener".
 • Structured data — JSON-LD validity and schema.org completeness for Article, Product, Recipe, Breadcrumb, FAQ, Organization and more: the fields Google needs for rich results.
