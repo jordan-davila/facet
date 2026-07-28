@@ -128,7 +128,10 @@ const DATA: Record<FacetId, unknown> = {
   contrast: { level: 'AA', checked: 214, failing: 1, undetermined: 12 },
   meta: {
     title: 'Field notes on cut and clarity — Loupe',
-    description: 'A short guide.',
+    description:
+      'A field guide to reading cut and clarity in the wild, covering table proportions, ' +
+      'girdle thickness, pavilion angles, and the handful of inclusions that actually ' +
+      'matter when you are grading a stone at speed under a loupe in poor light.',
     canonical: 'https://loupe.example/field-notes',
     lang: 'en',
     viewport: 'width=device-width, initial-scale=1',
@@ -168,6 +171,15 @@ const DATA: Record<FacetId, unknown> = {
         selector: 'link[hreflang="fr"]',
       },
       {
+        hreflang: 'en-ca',
+        href: 'https://loupe.example/ca/field-notes',
+        resolved: 'https://loupe.example/ca/field-notes',
+        validTag: true,
+        isSelf: false,
+        isXDefault: false,
+        selector: 'link[hreflang="en-ca"]',
+      },
+      {
         hreflang: 'en-UK',
         href: 'https://loupe.example/uk/field-notes',
         resolved: 'https://loupe.example/uk/field-notes',
@@ -188,7 +200,7 @@ const DATA: Record<FacetId, unknown> = {
     ],
     hasSelfReference: true,
     hasXDefault: false,
-    locales: 4,
+    locales: 5,
   },
   images: {
     total: 8,

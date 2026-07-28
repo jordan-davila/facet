@@ -26,8 +26,14 @@ export interface HreflangData {
 /**
  * Language tag shape per BCP-47, narrowed to what hreflang actually accepts:
  * a language, an optional script, and an optional region.
+ *
+ * Case-insensitive on purpose. BCP-47 tags are not case-sensitive and Google
+ * says so explicitly for hreflang; `en-ca` and `EN-US` are as valid as
+ * `en-CA`. An earlier version required an uppercase region and reported real,
+ * working annotations as errors — a false positive in an auditing tool is
+ * worse than a missed one, because people act on it.
  */
-const TAG_RE = /^([a-z]{2,3})(-[A-Z][a-z]{3})?(-([A-Z]{2}|\d{3}))?$/
+const TAG_RE = /^[a-z]{2,3}(-[a-z]{4})?(-([a-z]{2}|\d{3}))?$/i
 
 /**
  * Region codes people reach for that ISO 3166-1 does not define. These are the

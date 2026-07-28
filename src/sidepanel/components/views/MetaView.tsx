@@ -25,8 +25,15 @@ function LengthMeter({
 
   return (
     <div className="flex items-center gap-2">
-      <span className="w-[72px] shrink-0 eyebrow">{label}</span>
-      <span className="h-[3px] flex-1 overflow-hidden rounded-full bg-muted" aria-hidden>
+      {/* Wide enough for "DESCRIPTION" at 11px mono with its tracking; at 72px
+          the label overran its box and collided with the bar. */}
+      <span className="w-24 shrink-0 eyebrow">{label}</span>
+      {/* Capped rather than flex-1: at full width the bar ran into the count
+          and a maxed-out meter looked like a rendering fault. */}
+      <span
+        className="h-[3px] w-full max-w-24 shrink overflow-hidden rounded-full bg-muted"
+        aria-hidden
+      >
         <span
           className={cn(
             'block h-full rounded-full transition-[width] duration-500',
@@ -37,7 +44,7 @@ function LengthMeter({
       </span>
       <span
         className={cn(
-          'shrink-0 font-mono text-[11px]',
+          'ml-auto shrink-0 font-mono text-[11px]',
           withinRange ? 'text-muted-foreground' : 'text-warning'
         )}
       >

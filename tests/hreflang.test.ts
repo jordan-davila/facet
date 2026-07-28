@@ -56,6 +56,27 @@ describe('auditHreflang', () => {
     expect(result.data.entries.every((e) => e.validTag)).toBe(true)
   })
 
+  it('accepts a lowercase region, which is valid and common', () => {
+    // Regression: these are real, working annotations that an earlier
+    // uppercase-only pattern reported as errors.
+    const result = run(
+      SELF +
+        alt('en-ca', 'https://example.com/ca/') +
+        alt('en-us', 'https://example.com/us/') +
+        alt('EN-GB', 'https://example.com/gb/') +
+        alt('zh-hant-tw', 'https://example.com/tw/')
+    )
+
+    expect(result.data.entries.every((e) => e.validTag)).toBe(true)
+    expect(result.issues.some((i) => i.id.endsWith('-tag'))).toBe(false)
+  })
+
+  it('still catches a bad region regardless of its case', () => {
+    const result = run(SELF + alt('en-uk', 'https://example.com/uk/'))
+
+    expect(result.issues.find((i) => i.id === 'hreflang-1-region')?.detail).toContain('GB')
+  })
+
   it('rejects an underscore separator', () => {
     const result = run(SELF + alt('en_US', 'https://example.com/us/'))
 
