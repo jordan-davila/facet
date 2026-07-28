@@ -1,6 +1,12 @@
-// Generates the Facet toolbar icons — a faceted indigo gem — with no external
-// dependencies. Renders each size supersampled 4× for clean anti-aliasing and
-// encodes a PNG by hand (zlib + CRC32 from the Node standard library).
+// Generates the Facet toolbar icons — a brilliant-cut sapphire — with no
+// external dependencies. Renders each size supersampled 4x for clean
+// anti-aliasing and encodes a PNG by hand (zlib + CRC32 from the Node library).
+//
+// Drawn procedurally rather than exported from a raster: at 16px a generated
+// bitmap loses every facet and collapses into a blob, whereas geometry stays
+// crisp at any size. Everything here is therefore sized in fractions of the
+// canvas, and no detail is finer than an eighth of it — the limit below which
+// a 16px render turns to mush.
 import { writeFileSync } from 'node:fs'
 import { dirname, resolve } from 'node:path'
 import { fileURLToPath } from 'node:url'
@@ -11,13 +17,21 @@ const SIZES = [16, 32, 48, 128, 512]
 const SUPERSAMPLE = 4
 
 // --- geometry / color -------------------------------------------------------
-const GRADIENT_TOP = [124, 116, 255] // indigo-ish top
-const GRADIENT_BOTTOM = [67, 56, 202] // deep indigo bottom
+// Sapphire, matching --primary in the panel. The old icon was indigo, left over
+// from before the palette moved.
+const GRADIENT_TOP = [59, 130, 214] // lifted sapphire
+const GRADIENT_BOTTOM = [17, 56, 116] // deep sapphire
 const GEM_LIGHT = [255, 255, 255]
-const GEM_TINT = [199, 210, 254] // indigo-200
-const FACET_EDGE = [129, 140, 248] // indigo-400
-const GEM_HALF_WIDTH = 0.4
-const GEM_HALF_HEIGHT = 0.5
+const GEM_TINT = [200, 226, 252] // ice blue
+const FACET_EDGE = [23, 68, 138] // the cut lines, dark enough to hold at 16px
+
+// A brilliant cut seen face-on: flat table, crown flaring to the girdle, then
+// a pavilion tapering to the culet.
+const TABLE_HALF = 0.24 // half-width of the flat top
+const GIRDLE_HALF = 0.5 // half-width at the widest point
+const TABLE_Y = -0.54 // top edge
+const GIRDLE_Y = -0.22 // widest point
+const CULET_Y = 0.62 // the point
 
 function lerp(a, b, t) {
   return a + (b - a) * t
@@ -27,36 +41,107 @@ function lerpColor(a, b, t) {
   return [lerp(a[0], b[0], t), lerp(a[1], b[1], t), lerp(a[2], b[2], t)]
 }
 
-/** Signed-distance test for a rounded square filling the canvas. */
+/**
+ * Signed-distance test for a rounded square filling the canvas.
+ *
+ * Only the four corners are rounded. A point is outside just when it sits past
+ * the radius in BOTH axes at once — testing the axes together instead cut
+ * notches out of all four straight edges, which is what made the old icon look
+ * like a cross.
+ */
 function insideRoundedSquare(x, y, size) {
   const radius = size * 0.2245
   const half = size / 2
   const dx = Math.abs(x - half) - (half - radius)
   const dy = Math.abs(y - half) - (half - radius)
-  if (dx <= 0 || dy <= 0) return Math.max(dx, dy) <= 0
+  if (dx <= 0 || dy <= 0) return true
   return dx * dx + dy * dy <= radius * radius
 }
 
-/** Color of the faceted gem for a point inside the rhombus. */
-function gemColor(u, v) {
-  if (Math.abs(Math.abs(u) - Math.abs(v)) < 0.03) return FACET_EDGE
-  let shade
-  if (v <= -Math.abs(u)) shade = 0.98
-  else if (v >= Math.abs(u)) shade = 0.68
-  else if (u < 0) shade = 0.9
-  else shade = 0.82
-  return lerpColor(GEM_TINT, GEM_LIGHT, shade)
+/** Half-width of the stone at a given height, or 0 outside it. */
+function halfWidthAt(v) {
+  if (v < TABLE_Y || v > CULET_Y) return 0
+  if (v <= GIRDLE_Y) {
+    // Crown: flares from the table out to the girdle.
+    const t = (v - TABLE_Y) / (GIRDLE_Y - TABLE_Y)
+    return lerp(TABLE_HALF, GIRDLE_HALF, t)
+  }
+  // Pavilion: tapers from the girdle to the culet.
+  const t = (v - GIRDLE_Y) / (CULET_Y - GIRDLE_Y)
+  return lerp(GIRDLE_HALF, 0, t)
 }
 
+function insideGem(u, v) {
+  return Math.abs(u) <= halfWidthAt(v)
+}
+
+/** Perpendicular distance from a point to a segment. */
+function distanceToSegment(px, py, ax, ay, bx, by) {
+  const dx = bx - ax
+  const dy = by - ay
+  const lengthSq = dx * dx + dy * dy
+  const t =
+    lengthSq === 0 ? 0 : Math.max(0, Math.min(1, ((px - ax) * dx + (py - ay) * dy) / lengthSq))
+  const cx = ax + t * dx
+  const cy = ay + t * dy
+  return Math.hypot(px - cx, py - cy)
+}
+
+/**
+ * The cuts of a brilliant, and only these: two crown divisions, the girdle,
+ * and two pavilion divisions meeting at the culet. Five lines is already the
+ * most a 16px render can hold.
+ */
+const CUTS = [
+  [-TABLE_HALF, TABLE_Y, -TABLE_HALF, GIRDLE_Y],
+  [TABLE_HALF, TABLE_Y, TABLE_HALF, GIRDLE_Y],
+  [-GIRDLE_HALF, GIRDLE_Y, GIRDLE_HALF, GIRDLE_Y],
+  [-TABLE_HALF, GIRDLE_Y, 0, CULET_Y],
+  [TABLE_HALF, GIRDLE_Y, 0, CULET_Y],
+]
+
+function onCutLine(u, v) {
+  return CUTS.some(([ax, ay, bx, by]) => distanceToSegment(u, v, ax, ay, bx, by) < 0.038)
+}
+
+/**
+ * Color of the stone at a point inside it. The planes differ just enough to
+ * read as a cut rather than a flat shape, without adding detail that would
+ * vanish when the icon is drawn 16 pixels wide.
+ */
+function gemColor(u, v) {
+  if (onCutLine(u, v)) return FACET_EDGE
+  if (v < GIRDLE_Y) {
+    if (Math.abs(u) < TABLE_HALF) return GEM_LIGHT
+    return lerpColor(GEM_TINT, GEM_LIGHT, u < 0 ? 0.75 : 0.35)
+  }
+  return lerpColor(GEM_TINT, GEM_LIGHT, u < 0 ? 0.55 : 0.1)
+}
+
+/**
+ * Below this, cut lines are thinner than a pixel and the stone turns to mush,
+ * so small sizes get a simplified, larger silhouette instead. Shipping distinct
+ * geometry per size is what icon sets do; scaling one drawing down is not.
+ */
+const SIMPLIFY_AT_OR_BELOW = 32
+
+/** Small renders enlarge the stone to buy back the detail they give up. */
+const SIMPLE_SCALE = 1.34
+
 /** Sample one (supersampled) pixel: returns [r, g, b, a]. */
-function sample(x, y, size) {
+function sample(x, y, size, targetSize) {
   if (!insideRoundedSquare(x, y, size)) return [0, 0, 0, 0]
   const bg = lerpColor(GRADIENT_TOP, GRADIENT_BOTTOM, y / size)
-  const nx = (x / size) * 2 - 1
-  const ny = (y / size) * 2 - 1
-  const u = nx / GEM_HALF_WIDTH
-  const v = ny / GEM_HALF_HEIGHT
-  if (Math.abs(u) + Math.abs(v) <= 1) {
+  const simple = targetSize <= SIMPLIFY_AT_OR_BELOW
+  const scale = simple ? SIMPLE_SCALE : 1
+  const u = ((x / size) * 2 - 1) / scale
+  const v = ((y / size) * 2 - 1) / scale
+  if (insideGem(u, v)) {
+    // One cut line survives at 16px; the rest would only add noise.
+    if (simple) {
+      const onGirdle = Math.abs(v - GIRDLE_Y) < 0.055
+      return onGirdle ? [...FACET_EDGE, 255] : [...GEM_LIGHT, 255]
+    }
     const [r, g, b] = gemColor(u, v)
     return [r, g, b, 255]
   }
@@ -79,7 +164,8 @@ function renderRgba(size) {
           const [sr, sg, sb, sa] = sample(
             px * SUPERSAMPLE + sx + 0.5,
             py * SUPERSAMPLE + sy + 0.5,
-            s
+            s,
+            size
           )
           const alpha = sa / 255
           r += sr * alpha
