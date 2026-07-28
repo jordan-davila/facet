@@ -92,7 +92,14 @@ export function App() {
       )
     }
     if (isFacetId(active)) {
-      return <FacetView facet={active} report={state.report} onHighlight={highlight} />
+      return (
+        <FacetView
+          facet={active}
+          report={state.report}
+          onHighlight={highlight}
+          onOpenSettings={() => setActive('settings')}
+        />
+      )
     }
     return null
   }

@@ -1,4 +1,5 @@
 import { useCallback, useRef, useState } from 'react'
+import { toast } from 'sonner'
 import type { AuditReport, Settings } from '@/core/types'
 import { type ActiveTab, getActiveTab, highlightOnPage, isSupported, runScan } from '../lib/scan'
 
@@ -56,8 +57,12 @@ export function useScan(): UseScan {
     }
   }, [])
 
-  const highlight = useCallback((selector: string) => {
-    if (tabIdRef.current !== null) void highlightOnPage(tabIdRef.current, selector)
+  const highlight = useCallback(async (selector: string) => {
+    if (tabIdRef.current === null) return
+    const found = await highlightOnPage(tabIdRef.current, selector)
+    // Silence here used to look identical to success, so a stale selector
+    // simply did nothing and said nothing.
+    if (!found) toast.error('That element is no longer on the page. Scan again.')
   }, [])
 
   return { state, run, highlight }

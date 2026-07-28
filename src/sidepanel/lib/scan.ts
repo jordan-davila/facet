@@ -44,10 +44,13 @@ export async function runScan(tabId: number, settings: Settings): Promise<AuditR
   return result.data
 }
 
-export async function highlightOnPage(tabId: number, selector: string): Promise<void> {
+/** True when the element was found and outlined on the page. */
+export async function highlightOnPage(tabId: number, selector: string): Promise<boolean> {
   try {
-    await sendToTab(tabId, { type: 'highlight', selector })
+    const result = await sendToTab<boolean>(tabId, { type: 'highlight', selector })
+    return result.ok && result.data === true
   } catch {
-    // The page may have navigated away; highlighting is best-effort.
+    // The page may have navigated away, or the content script may be gone.
+    return false
   }
 }

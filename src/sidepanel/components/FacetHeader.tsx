@@ -7,7 +7,11 @@ import { plural, scoreColor } from '../lib/score'
 
 export function FacetHeader({ result }: { result: AuditResult }) {
   const Icon = facetIcon(result.facet)
-  const clean = result.errors === 0 && result.warnings === 0
+  // "All clear" has to mean nothing was found. Counting only errors and
+  // warnings put a green badge directly above an info-level finding, which is
+  // the tool contradicting itself on screen.
+  const notes = result.issues.filter((issue) => issue.severity === 'info').length
+  const clean = result.issues.length === 0
 
   return (
     <div className="space-y-2">
@@ -39,6 +43,9 @@ export function FacetHeader({ result }: { result: AuditResult }) {
           <Badge variant="warning">{plural(result.warnings, 'warning')}</Badge>
         )}
         {clean && <Badge variant="success">All clear</Badge>}
+        {!clean && result.errors === 0 && result.warnings === 0 && notes > 0 && (
+          <Badge variant="info">{plural(notes, 'note')}</Badge>
+        )}
         {result.passes > 0 && (
           <Badge variant="outline">{plural(result.passes, 'check')} passed</Badge>
         )}

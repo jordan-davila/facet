@@ -1,5 +1,6 @@
 import { Coffee, ExternalLink } from 'lucide-react'
 import { useEffect, useState } from 'react'
+import { toast } from 'sonner'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
@@ -136,6 +137,19 @@ function Field({
 export function SettingsView({ settings, update, reset }: SettingsViewProps) {
   const version = chrome.runtime.getManifest().version
 
+  /**
+   * Reset wipes every toggle, the conformance level, the issue cap and the
+   * theme. Undo is friendlier than a confirm dialog here: the action is cheap
+   * to reverse and a modal for a settings reset is heavier than the risk.
+   */
+  function resetWithUndo() {
+    const previous = settings
+    reset()
+    toast('Settings reset to defaults', {
+      action: { label: 'Undo', onClick: () => update(previous) },
+    })
+  }
+
   return (
     <div className="space-y-3">
       <h2 className="text-[15px] font-semibold">Settings</h2>
@@ -266,7 +280,7 @@ export function SettingsView({ settings, update, reset }: SettingsViewProps) {
         <div className="space-y-2.5">
           <div className="flex items-center justify-between gap-3">
             <span className="font-mono text-[11px] text-muted-foreground">Facet v{version}</span>
-            <Button variant="ghost" size="xs" onClick={reset}>
+            <Button variant="ghost" size="xs" onClick={resetWithUndo}>
               Reset to defaults
             </Button>
           </div>

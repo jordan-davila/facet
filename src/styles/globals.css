@@ -238,9 +238,11 @@
 }
 
 @utility eyebrow {
-  /* Engraved captions. Mono, because they name a measurement. */
+  /* Engraved captions. Mono, because they name a measurement. 11px is the
+     floor below which small functional labels stop being legible; 10px read
+     as decoration. */
   font-family: var(--font-mono);
-  font-size: 10px;
+  font-size: 11px;
   font-weight: 600;
   line-height: 1;
   letter-spacing: 0.11em;

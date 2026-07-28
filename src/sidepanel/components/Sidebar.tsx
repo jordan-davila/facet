@@ -13,6 +13,12 @@ interface SidebarProps {
   report: AuditReport | null
 }
 
+/** A facet missing from a finished report is one the user turned off. */
+function isTurnedOff(report: AuditReport | null, id: NavId): boolean {
+  if (!report || !isFacetId(id)) return false
+  return !report.results.some((r) => r.facet === id)
+}
+
 interface Marker {
   className: string
   /** Spoken suffix, so the dot is never the only carrier of the state. */
@@ -35,6 +41,7 @@ interface NavButtonProps {
   item: NavItem
   active: boolean
   marker: Marker | null
+  turnedOff?: boolean
   tabIndex: number
   onSelect: (id: NavId) => void
   onKeyDown: (event: React.KeyboardEvent) => void
@@ -45,13 +52,18 @@ function NavButton({
   item,
   active,
   marker,
+  turnedOff = false,
   tabIndex,
   onSelect,
   onKeyDown,
   register,
 }: NavButtonProps) {
   const { Icon } = item
-  const label = marker ? `${item.label} — ${marker.description}` : item.label
+  const label = turnedOff
+    ? `${item.label} — turned off`
+    : marker
+      ? `${item.label} — ${marker.description}`
+      : item.label
 
   return (
     <Tooltip>
@@ -66,6 +78,7 @@ function NavButton({
           onKeyDown={onKeyDown}
           className={cn(
             'relative flex size-10 items-center justify-center rounded-md transition-colors',
+            turnedOff && 'opacity-40',
             active
               ? 'bg-primary/15 text-primary'
               : 'text-muted-foreground hover:bg-accent hover:text-foreground'
@@ -156,6 +169,7 @@ export function Sidebar({ active, onSelect, report }: SidebarProps) {
           item={item}
           active={active === item.id}
           marker={facetMarker(report, item.id)}
+          turnedOff={isTurnedOff(report, item.id)}
           tabIndex={index === activeIndex ? 0 : -1}
           onSelect={onSelect}
           onKeyDown={(event) => handleKeyDown(event, index)}
@@ -165,9 +179,13 @@ export function Sidebar({ active, onSelect, report }: SidebarProps) {
         />
       ))}
 
-      {/* Pinned to the foot of the rail: leaving Facet, not moving within it. */}
-      <div className="mt-auto flex flex-col items-center gap-1">
-        {hasSupportLink() && <SupportLink />}
+      {/* Pinned to the foot of the rail: leaving Facet, not moving within it.
+          Settings comes first in DOM order so a keyboard user moving from the
+          rail into the panel never has to pass through a donation link. */}
+      {/* column-reverse: Settings comes first in the DOM so it precedes the
+          donation link in the tab order, while the tip jar still sits above it
+          visually. Source order is the tab order; only the paint is flipped. */}
+      <div className="mt-auto flex flex-col-reverse items-center gap-1">
         <NavButton
           item={SETTINGS_NAV}
           active={active === SETTINGS_NAV.id}
@@ -179,6 +197,7 @@ export function Sidebar({ active, onSelect, report }: SidebarProps) {
             buttons.current[SETTINGS_INDEX] = el
           }}
         />
+        {hasSupportLink() && <SupportLink />}
       </div>
     </nav>
   )

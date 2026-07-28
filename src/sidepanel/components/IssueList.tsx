@@ -62,10 +62,12 @@ export function IssueList({
                 {issue.selector && onHighlight && (
                   <Tooltip>
                     <TooltipTrigger asChild>
+                      {/* Reaching the element is the whole promise, so this
+                          gets a resting surface rather than a bare glyph. */}
                       <Button
                         variant="ghost"
-                        size="icon-xs"
-                        className="shrink-0 text-muted-foreground"
+                        size="icon-sm"
+                        className="shrink-0 bg-muted text-muted-foreground hover:bg-accent hover:text-foreground"
                         aria-label={`Show "${issue.title}" on the page`}
                         onClick={() => onHighlight(issue.selector!)}
                       >

@@ -74,7 +74,21 @@ const ISSUES: Partial<Record<FacetId, Issue[]>> = {
     },
   ],
   landmarks: [
-    { id: 'lm-1', severity: 'info', title: 'Two <nav> regions share no accessible name' },
+    {
+      id: 'lm-1',
+      severity: 'info',
+      title: 'Two <nav> regions share no accessible name',
+      detail: 'Give each one an aria-label so they can be told apart.',
+      selector: 'nav.primary',
+    },
+  ],
+  'structured-data': [
+    {
+      id: 'sd-1',
+      severity: 'error',
+      title: 'Article is missing required field(s): image',
+      detail: 'Google needs an image to show this as a rich result.',
+    },
   ],
 }
 
@@ -88,7 +102,7 @@ const SCORES: Record<FacetId, { score: number; errors: number; warnings: number;
     hreflang: { score: 80, errors: 1, warnings: 1, passes: 1 },
     images: { score: 47, errors: 1, warnings: 1, passes: 6 },
     links: { score: 78, errors: 0, warnings: 1, passes: 5 },
-    'structured-data': { score: 90, errors: 0, warnings: 0, passes: 4 },
+    'structured-data': { score: 85, errors: 1, warnings: 0, passes: 4 },
   }
 
 const DATA: Record<FacetId, unknown> = {
