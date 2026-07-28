@@ -17,13 +17,14 @@ const SIZES = [16, 32, 48, 128, 512]
 const SUPERSAMPLE = 4
 
 // --- geometry / color -------------------------------------------------------
-// Sapphire, matching --primary in the panel. The old icon was indigo, left over
-// from before the palette moved.
-const GRADIENT_TOP = [59, 130, 214] // lifted sapphire
-const GRADIENT_BOTTOM = [17, 56, 116] // deep sapphire
+// Violet, top to bottom. Deliberately all-purple rather than purple-to-pink:
+// a pink lower stop pulled the mark toward a consumer app, and the deeper
+// bottom keeps the white stone reading as the brightest thing in the square.
+const GRADIENT_TOP = [167, 85, 247] // violet
+const GRADIENT_BOTTOM = [76, 29, 149] // deep violet
 const GEM_LIGHT = [255, 255, 255]
-const GEM_TINT = [200, 226, 252] // ice blue
-const FACET_EDGE = [23, 68, 138] // the cut lines, dark enough to hold at 16px
+const GEM_TINT = [233, 222, 253] // pale lavender
+const FACET_EDGE = [70, 22, 130] // the cut lines, dark enough to hold at 16px
 
 // A brilliant cut seen face-on: flat table, crown flaring to the girdle, then
 // a pavilion tapering to the culet.

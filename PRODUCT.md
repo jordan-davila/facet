@@ -86,10 +86,15 @@ hreflang, images, links, structured data.
   Facet speaking; IBM Plex Mono is the _inspected page_ speaking — tags, roles,
   selectors, URLs, JSON, and measured numbers. A reader can tell a string's
   origin at a glance. This rule is binding.
-- **Color:** sapphire brand, deliberately outside the red/amber/green severity
-  spectrum so it never competes with a finding. Beryl marks the "Good" score
-  band because a 75–89 page still has work. Buy Me a Coffee's `#FFDD00` is used
-  for the tip jar only.
+- **Color:** sapphire brand _in the panel_, deliberately outside the
+  red/amber/green severity spectrum so it never competes with a finding. Beryl
+  marks the "Good" score band because a 75–89 page still has work. Buy Me a
+  Coffee's `#FFDD00` is used for the tip jar only.
+- **The toolbar icon is violet**, not sapphire: a step-cut white stone on a
+  violet-to-deep-violet gradient. This is a known and accepted divergence from
+  the panel's brand colour — the icon competes for attention in a browser
+  toolbar, where the panel is trying not to. Revisit only as a deliberate
+  decision, not as a consistency cleanup.
 - **The score gauge is a polygon with one edge per check**, derived from the
   facet list so the shape keeps counting correctly as checks are added.
 - Open source, MIT, at <https://github.com/jordan-davila/facet>.
